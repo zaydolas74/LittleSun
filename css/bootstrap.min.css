@@ -2223,12 +2223,12 @@ fieldset:disabled a.btn {
 .btn-primary {
   color: #212529;
   background-color: #f9de4a;
-  border-color: #f9de4a;
+  border-color: #f8d725;
 }
 .btn-primary:hover {
   color: #212529;
   background-color: #f8d725;
-  border-color: #f7d519;
+  border-color: #f8d725;
 }
 .btn-primary.focus,
 .btn-primary:focus {
