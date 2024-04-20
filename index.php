@@ -51,3 +51,14 @@
             </div>
         </div>
 </section>
+
+<script>
+    //go to home page after submitting the form
+    document.querySelector('form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        window.location.href = 'home.php';
+    });
+</script>
+
+</body>
+</head>

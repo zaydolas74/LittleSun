@@ -11,7 +11,5 @@
 
     <!-- Include CSS -->
     <link rel="stylesheet" href="css/style.css">
-
-</head>
-
-<body>
+    <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    <link href="css/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
