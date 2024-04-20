@@ -15,10 +15,8 @@
                         Welcome to <span class="text-primary" style="font-weight: bold;">Little Sun</span> shiftplanner
                     </h1>
                     <p style="color: hsl(217, 10%, 50.8%)">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                        Eveniet, itaque accusantium odio, soluta, corrupti aliquam
-                        quibusdam tempora at cupiditate quis eum maiores libero
-                        veritatis? Dicta facilis sint aliquid ipsum atque?
+
+                        Welcome to Little Sun Shiftplaner, the ultimate platform for shift planners in Zambia! At Little Sun Shiftpaner, we empower workers to take control of their schedules by defining their roles and selecting preferred work locations. Our user-friendly interface allows workers to plan their availability for shifts and even schedule well-deserved vacations with ease.
                     </p>
                 </div>
 
@@ -41,8 +39,10 @@
                         </div>
                         <div class="card-footer py-4 flex-column align-items-center justify-content-center">
                             <div class="text-center ">
-                                <p>forgot your password?</p>
-                                <p>Don't have an account? <a href="#" style="font-weight: bold;">Sign up</a></p>
+                                <a href="#">
+                                    <p style="font-weight: bold;">Forgot password?</p>
+                                </a>
+                                <p>Don't have an account? <a href="register.php" style="font-weight: bold;">Create Account</a></p>
                             </div>
                         </div>
                     </div>
