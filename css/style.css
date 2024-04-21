@@ -1,6 +1,37 @@
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 body {
   font-family: "Open Sans", sans-serif;
-  margin: 0;
-  padding: 0;
+}
+
+.navbar-brand #small-logo {
+  display: none;
+}
+
+#label-profile-pic {
+  display: block;
+  width: 150px;
+  background-color: #f9de4a;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 8px;
+  display: none;
+}
+#profilePic {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .logo-side-bar {
+  }
+  .navbar-brand #big-logo {
+    display: none;
+  }
+  .navbar-brand #small-logo {
+    display: inline-block;
+  }
+  #sidebar-logo {
+    display: flex;
+    justify-content: center;
+  }
 }
