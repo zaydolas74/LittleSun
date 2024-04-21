@@ -21,42 +21,43 @@
                                 <form class="mx-1 mx-md-4">
 
                                     <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                                         <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <label class="form-label" for="form3Example1c">Name</label>
-                                            <input type="text" id="form3Example1c" class="form-control" />
+
+                                            <label class="form-label" for="Name">Name</label>
+                                            <input type="text" id="Name" class="form-control" />
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                                         <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <label class="form-label" for="form3Example1c">Username</label>
-                                            <input type="text" id="form3Example1c" class="form-control" />
+
+                                            <label class="form-label" for="Username">Username</label>
+                                            <input type="text" id="Username" class="form-control" name="Username" />
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
                                         <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <label class="form-label" for="form3Example3c">Email</label>
-                                            <input type="email" id="form3Example3c" class="form-control" />
+
+                                            <label class="form-label" for="Email">Email</label>
+                                            <input type="email" id="Email" class="form-control" name="Email" />
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4">
-                                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+
                                         <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <label class="form-label" for="form3Example4c">Password</label>
-                                            <input type="password" id="form3Example4c" class="form-control" />
+
+                                            <label class="form-label" for="Password">Password</label>
+                                            <input type="password" id="Password" class="form-control" name="Password" />
                                         </div>
                                     </div>
 
                                     <div class="d-flex flex-row align-items-center mb-4 ">
-                                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
                                         <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                            <label class="form-label" for="form3Example4cd">Repeat your password</label>
-                                            <input type="password" id="form3Example4cd" class="form-control" />
+
+                                            <label class="form-label" for="Password2">Repeat your password</label>
+                                            <input type="password" id="Password2" class="form-control" name="Password2" />
                                         </div>
                                     </div>
 
