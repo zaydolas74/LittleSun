@@ -38,7 +38,7 @@ if (!empty($_POST)) {
 
         <!-- Sidebar - Brand -->
         <div class="container justify-content-center" id="sidebar-logo">
-            <a class="navbar-brand py-3 m-0 justify-content-center" href="index.php">
+            <a class="navbar-brand py-3 m-0 justify-content-center" href="#">
                 <img src="images/Little-Sun-Logo.png" alt="" id="big-logo" height="35">
                 <img src="images/Little-Sun-Logo-small.png" id="small-logo" alt="" height="50">
             </a>
@@ -149,9 +149,23 @@ if (!empty($_POST)) {
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <img class="img-profile rounded-circle mx-2" src="images/profile.jpg">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Joris Hens</span>
+                            <div class="container flex-column  align-items-start">
+                                <span class="small">
+                                    <?php
+
+                                    ?>
+                                    admin
+                                </span>
+                                <span class="mr-2 d-none d-lg-inline text-dark ">Joris Hens</span>
+                            </div>
                             <i class="fa-solid fa-angle-down"></i>
+
                         </a>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <a class="dropdown-item" href="#">TEST</a>
+                            <a class="dropdown-item" href="#">TEST</a>
+                            <a class="dropdown-item" href="logout.php">Logout</a>
+                        </div>
                     </li>
 
                 </ul>
@@ -166,7 +180,7 @@ if (!empty($_POST)) {
                         <h6 class="m-0 font-weight-bold text-dark">Create Manager</h6>
                     </div>
                     <div class="card-body">
-                        <form class="mx-1 mx-md-4 was-validated" action="" method="POST" enctype="multipart/form-data">
+                        <form class="mx-1 mx-md-4" action="" method="POST" enctype="multipart/form-data">
                             <div class="form-group ">
                                 <label for="Name">Name</label>
                                 <input type="text" class="form-control" id="Name" name="Name" required>
@@ -205,7 +219,7 @@ if (!empty($_POST)) {
                     </div>
                     <h1> IK WEET NIET WAT ER HIER ALLEMAAL IN MOET MAAR GY KAN DA MAKKELIJK AANPASSEN</h1>
                     <div class="card-body">
-                        <form class="mx-1 mx-md-4 was-validated" action="" method="POST">
+                        <form class="mx-1 mx-md-4" action="" method="POST">
                             <div class="form-group">
                                 <label for="Name">Name</label>
                                 <input type="text" class="form-control" id="Name" required>
@@ -232,18 +246,20 @@ if (!empty($_POST)) {
 
 
             </div>
+            <!-- End of Main Content -->
+
+
+
         </div>
-        <!-- End of Main Content -->
-
-
+        <!-- End of Content Wrapper -->
 
     </div>
-    <!-- End of Content Wrapper -->
-
-</div>
-<!-- End of Page Wrapper -->
+    <!-- End of Page Wrapper -->
 
 
-<script src="js/script.js"></script>
-</body>
-</head>
+    <script src="js/script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </body>
+    </head>
