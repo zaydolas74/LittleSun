@@ -244,7 +244,50 @@ if (!empty($_POST)) {
                     </div>
                 </div>
 
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-dark">Location Hub</h6>
+                    </div>
+                    <div class="card-body">
+                        <h1>Huidige Locatiehubs</h1>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Locatie</th>
+                                        <th>Adres</th>
+                                        <th>Aantal gebruikers</th>
+                                        <th>Actie</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Locatie 1</td>
+                                        <td>Adres 1</td>
+                                        <td>10</td>
+                                        <td>
+                                            <button class="btn btn-danger">
+                                                <i class="fas fa-trash"></i> Verwijderen
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Locatie 2</td>
+                                        <td>Adres 2</td>
+                                        <td>15</td>
+                                        <td>
+                                            <button class="btn btn-danger">
+                                                <i class="fas fa-trash"></i> Verwijderen
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <!-- Voeg hier meer rijen toe voor andere locaties -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
+                </div>
             </div>
             <!-- End of Main Content -->
 
