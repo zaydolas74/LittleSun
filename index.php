@@ -37,12 +37,11 @@
                                 </button>
                             </form>
                         </div>
-                        <div class="card-footer py-4 flex-column align-items-center justify-content-center">
+                        <div class="card-footer py-3 flex-column align-items-center justify-content-center">
                             <div class="text-center ">
                                 <a href="#">
-                                    <p style="font-weight: bold;">Forgot password?</p>
+                                    <p style="font-weight: bold; margin:0;">Forgot password?</p>
                                 </a>
-                                <p>Don't have an account? <a href="register.php" style="font-weight: bold;">Create Account</a></p>
                             </div>
                         </div>
                     </div>
