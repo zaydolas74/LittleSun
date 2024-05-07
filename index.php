@@ -1,3 +1,19 @@
+<?php
+include_once(__DIR__ . '/classes/User.php');
+if (!empty($_POST)) {
+    try {
+        $user = new User();
+        $user->setEmail($_POST['email']);
+        $user->setPassword($_POST['password']);
+        $user->login();
+        session_start();
+        $_SESSION['user'] = $user;
+        header('Location: home.php');
+    } catch (Throwable $ex) {
+        $error = $ex->getMessage();
+    }
+}
+?>
 <?php include_once 'bootstrap.php'; ?>
 <nav class="navbar navbar-light bg-dark py-3">
     <div class="container justify-content-center">
@@ -23,14 +39,19 @@
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <div class="card">
                         <div class="card-body py-4 px-5">
-                            <form>
+                            <form method="post" action="">
+                                <?php
+                                if (isset($error)) {
+                                    echo "<div class='alert alert-danger'>$error</div>";
+                                }
+                                ?>
                                 <div data-mdb-input-init class="form-outline mb-4">
                                     <label class="form-label" for="form3Example3">Email address</label>
-                                    <input type="email" id="form3Example3" class="form-control" />
+                                    <input type="email" id="form3Example3" class="form-control" name="email" />
                                 </div>
                                 <div data-mdb-input-init class="form-outline mb-4">
                                     <label class="form-label" for="form3Example4">Password</label>
-                                    <input type="password" id="form3Example4" class="form-control" />
+                                    <input type="password" id="form3Example4" class="form-control" name="password" />
                                 </div>
                                 <button type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block w-100">
                                     <span style="font-weight: bold;">Sign in</span>
@@ -50,14 +71,6 @@
             </div>
         </div>
 </section>
-
-<script>
-    //go to home page after submitting the form
-    document.querySelector('form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        window.location.href = 'home.php';
-    });
-</script>
 
 </body>
 </head>

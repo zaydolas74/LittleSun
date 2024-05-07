@@ -1,33 +1,119 @@
 <?php include_once 'bootstrap.php'; ?>
 
 <?php
+include_once(__DIR__ . '/classes/User.php');
+include_once(__DIR__ . '/classes/Location.php');
 
-// If upload button is clicked ...
-$uploadOk = 1;
-
-//Dit werkt nu moet gy proberen omda naar de database te sturen
-if (!empty($_POST)) {
-
-    if (empty($_POST['Name']) || empty($_POST['Email']) || empty($_POST['Password']) || empty($_FILES['profilePic'])) {
-        $uploadOk = 0;
-    } else {
-        $Name = $_POST['Name'];
-        $Email = $_POST['Email'];
-        $Password = $_POST['Password'];
-        $UserType = $_POST['UserType'];
-        $filename = $_FILES["profilePic"]["name"];
-        $tempname = $_FILES["profilePic"]["tmp_name"];
-        $folder = "images/" . $filename;
-
-        if ($_FILES["profilePic"]["size"] > 500000) {
-            $uploadOk = 0;
+session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: index.php');
+} else {
+    $admin = false;
+    $manager = false;
+    $users = User::getAllData();
+    foreach ($users as $user) :
+        if ($user['email'] == $_SESSION['user']->getEmail()) {
+            $username = $user['username'];
+            $email = $user['email'];
+            $name = $user['name'];
+            $location_name = Location::getLocationById($user['location_id']);
+            if ($user['type'] == 'Admin') {
+                $admin = true;
+            }
+            if ($user['type'] == 'Manager') {
+                $manager = true;
+            }
         }
+    endforeach;
+    if (!empty($_POST)) {
+        try {
+            if ($_POST['password'] !== $_POST['rpassword']) {
+                throw new Exception("The passwords do not match.");
+            } else {
+                $user = new User();
+                $options = [
+                    'cost' => 12,
+                ];
+                $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT, $options);
+                $user->setName($_POST['name']);
+                $user->setUsername($_POST['username']);
+                $user->setEmail($_POST['email']);
+                $user->setPassword($hashedPassword);
+                $user->setLocation_id($_POST['hub_location']);
+                if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = __DIR__ . '/images/';
+                    $uploadFile = $uploadDir . basename($_FILES['photo']['name']);
 
-        if ($uploadOk == 0) {
-        } else if (move_uploaded_file($tempname, $folder)) {
+                    // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
+                    $uniqueFileName = uniqid() . '_' . basename($_FILES['photo']['name']);
+                    $uploadFile = $uploadDir . $uniqueFileName;
+
+                    if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadFile)) {
+                        // Unieke bestandsnaam opgeslagen in de database
+                        $user->setPhoto($uniqueFileName);
+                    } else {
+                        throw new Exception("Failed to move uploaded file.");
+                    }
+                }
+                $user->saveManager();
+            }
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
+        }
+    }
+    if (!empty($_POST)) {
+        try {
+            if ($_POST['passwordUser'] !== $_POST['rpasswordUser']) {
+                throw new Exception("The passwords do not match.");
+            } else {
+                $user = new User();
+                $options = [
+                    'cost' => 12,
+                ];
+                $hashedPassword = password_hash($_POST['passwordUser'], PASSWORD_DEFAULT, $options);
+                $user->setName($_POST['nameUser']);
+                $user->setUsername($_POST['userName']);
+                $user->setEmail($_POST['emailUser']);
+                $user->setPassword($hashedPassword);
+                $user->setLocation_id($location_name['id']);
+                if (isset($_FILES['photoUser']) && $_FILES['photoUser']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = __DIR__ . '/images/';
+                    $uploadFile = $uploadDir . basename($_FILES['photoUser']['name']);
+
+                    // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
+                    $uniqueFileName = uniqid() . '_' . basename($_FILES['photoUser']['name']);
+                    $uploadFile = $uploadDir . $uniqueFileName;
+
+                    if (move_uploaded_file($_FILES['photoUser']['tmp_name'], $uploadFile)) {
+                        // Unieke bestandsnaam opgeslagen in de database
+                        $user->setPhoto($uniqueFileName);
+                    } else {
+                        throw new Exception("Failed to move uploaded file.");
+                    }
+                }
+                $user->save();
+            }
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
+        }
+    }
+    if (!empty($_POST)) {
+        try {
+            $location = new Location();
+            $location->setHub_location($_POST['location']);
+            if (isset($_POST['add'])) {
+                $location->addLocation();
+                header("Refresh:0");
+            } elseif (isset($_POST['remove'])) {
+                $location->removeLocation();
+                header("Refresh:0");
+            }
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
         }
     }
 }
+
 ?>
 
 <!-- Page Wrapper -->
@@ -49,7 +135,7 @@ if (!empty($_POST)) {
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="home.php">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Dashboard</span></a>
         </li>
@@ -59,29 +145,29 @@ if (!empty($_POST)) {
 
         <!-- Heading -->
         <div class="sidebar-heading">
-            TEST
+            Calander
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>TEST</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom Components:</h6>
-                    <a class="collapse-item" href="buttons.html">Buttons</a>
-                    <a class="collapse-item" href="cards.html">Cards</a>
-                </div>
-            </div>
+            <?php if ($manager == true) { ?>
+                <a class="nav-link collapsed" href="timeOffManager.php">
+                    <i class='far fa-clock'></i>
+                    <span>Time Off</span>
+                </a>
+            <?php } else { ?>
+                <a class="nav-link collapsed" href="timeOffUser.php">
+                    <i class='far fa-clock'></i>
+                    <span>Time Off</span>
+                </a>
+            <?php } ?>
         </li>
 
         <!-- Nav Item - Utilities Collapse Menu -->
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-wrench"></i>
-                <span>TEST</span>
+            <a class="nav-link collapsed" href="#">
+                <i class='far fa-calendar-alt'></i>
+                <span>Calander</span>
             </a>
         </li>
 
@@ -94,27 +180,29 @@ if (!empty($_POST)) {
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>TEST</span>
-            </a>
-        </li>
+        <?php if ($manager == true) : ?>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="hub.php">
+                    <i class="fa-brands fa-hubspot"></i>
+                    <span>Manager Hub</span>
+                </a>
+            </li>
+        <?php endif; ?>
 
-        <!-- Nav Item - Charts -->
+        <!-- Nav Item - Charts
         <li class="nav-item">
             <a class="nav-link" href="charts.html">
                 <i class="fas fa-fw fa-chart-area"></i>
                 <span>TEST</span></a>
         </li>
 
-        <!-- Nav Item - Tables -->
+        Nav Item - Tables 
         <li class="nav-item">
             <a class="nav-link" href="tables.html">
                 <i class="fas fa-fw fa-table"></i>
                 <span>TEST</span></a>
         </li>
-
+        -->
 
 
 
@@ -131,7 +219,7 @@ if (!empty($_POST)) {
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
 
-                <!-- Topbar Search -->
+                <!-- Topbar Search 
                 <form class=" d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                     <div class="input-group">
                         <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
@@ -142,21 +230,30 @@ if (!empty($_POST)) {
                         </div>
                     </div>
                 </form>
-
+                -->
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <img class="img-profile rounded-circle mx-2" src="images/profile.jpg">
+                            <img class="img-profile rounded-circle mx-2" src="images/<?php echo $user['profile_picture']; ?>">
                             <div class="container flex-column  align-items-start">
                                 <span class="small">
                                     <?php
-
+                                    if ($admin == true) {
+                                        echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">🛡️ Admin</span>';
+                                    } else if ($manager == true) {
+                                        echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">💼 Manager</span>';
+                                    } else {
+                                        echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">👤 User</span>';
+                                    }
                                     ?>
-                                    admin
                                 </span>
-                                <span class="mr-2 d-none d-lg-inline text-dark ">Joris Hens</span>
+                                <span class="mr-2 d-none d-lg-inline text-dark ">
+                                    <?php
+                                    echo ucfirst($username)
+                                    ?>
+                                </span>
                             </div>
                             <i class="fa-solid fa-angle-down"></i>
 
@@ -175,118 +272,145 @@ if (!empty($_POST)) {
 
             <!-- Begin Page Content -->
             <div class="container-fluid">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-dark">Create Manager</h6>
-                    </div>
-                    <div class="card-body">
-                        <form class="mx-1 mx-md-4" action="" method="POST" enctype="multipart/form-data">
-                            <div class="form-group ">
-                                <label for="Name">Name</label>
-                                <input type="text" class="form-control" id="Name" name="Name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="Email">Email</label>
-                                <input type="email" class="form-control" id="Email" aria-describedby="emailHelp" name="Email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="Password">Password</label>
-                                <input type="password" class="form-control" id="Password" name="Password" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="profilePic">Profile picture</label>
-                                <label for="profilePic" id="label-profile-pic" class=" btn btn-primary">
-                                    Add picture
-                                </label>
-                                <input type="file" accept="image/jpeg, image/png, image/jpg" id="profilePic" name="profilePic" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="UserType">User Type</label>
-                                <select class="custom-select" id="UserType" name="UserType" required>
-                                    <option value="User">User</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Manager">Manager</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary px-4"><strong>Submit</strong></button>
-                        </form>
-                    </div>
-                </div>
+                <?php
+                if ($manager == true || $admin == true) :
+                ?>
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-dark">Add a hub manager</h6>
+                        </div>
+                        <div class="card-body">
+                            <form action="" class="mx-1 mx-md-4" method="post" enctype="multipart/form-data">
 
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-dark">Create Location</h6>
-                    </div>
-                    <h1> IK WEET NIET WAT ER HIER ALLEMAAL IN MOET MAAR GY KAN DA MAKKELIJK AANPASSEN</h1>
-                    <div class="card-body">
-                        <form class="mx-1 mx-md-4" action="" method="POST">
-                            <div class="form-group">
-                                <label for="Name">Name</label>
-                                <input type="text" class="form-control" id="Name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="Email">Email</label>
-                                <input type="email" class="form-control" id="Email" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="Password">Password</label>
-                                <input type="password" class="form-control" id="Password" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="UserType">User Type</label>
-                                <select class="custom-select" id="UserType">
-                                    <option value="User">User</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Manager">Manager</option>
-                                </select>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                                <div class="d-flex flex-row align-items-center mb-4">
+                                    <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                        <label class="form-label" for="form3Example1c">Name</label>
+                                        <input type="text" id="form3Example1c" name="name" class="form-control" />
+                                    </div>
+                                </div>
 
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-dark">Location Hub</h6>
+                                <div class="d-flex flex-row align-items-center mb-4">
+                                    <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                        <label class="form-label" for="form3Example1c">Username</label>
+                                        <input type="text" id="form3Example1c" name="username" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row align-items-center mb-4">
+                                    <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                        <label class="form-label" for="form3Example3c">Email</label>
+                                        <input type="email" id="form3Example3c" name="email" class="form-control" />
+                                    </div>
+                                </div>
+                                <?php
+                                // if (isset($error)) {
+                                //     echo "<div class='alert alert-danger' role='alert'>$error</div>";
+                                // }
+                                ?>
+                                <div class="d-flex flex-row align-items-center mb-4">
+                                    <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                        <label class="form-label" for="form3Example4c">Password</label>
+                                        <input type="password" id="form3Example4c" name="password" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row align-items-center mb-4 ">
+                                    <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                        <label class="form-label" for="form3Example4cd">Repeat Password</label>
+                                        <input type="password" id="form3Example4cd" name="rpassword" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row align-items-center mb-4 ">
+                                    <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                        <label class="form-label" for="form3Example4cd">Hub Location nr</label>
+                                        <input type="password" id="form3Example4cd" name="hub_location" class="form-control" />
+                                    </div>
+                                </div>
+
+                                <div class="d-flex flex-row align-items-center mb-4">
+                                    <div class="form-outline flex-fill mb-0">
+                                        <label class="form-label" for="formFile">Upload Profile Picture</label>
+                                        <input class="form-control" type="file" id="formFile" name="photo">
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-start">
+                                    <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary px-5" style="font-weight: bold;" value="Add">
+                                </div>
+                            </form>
+                        </div>
+
                     </div>
-                    <div class="card-body">
-                        <h1>Huidige Locatiehubs</h1>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th>Locatie</th>
-                                        <th>Adres</th>
-                                        <th>Aantal gebruikers</th>
-                                        <th>Actie</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Locatie 1</td>
-                                        <td>Adres 1</td>
-                                        <td>10</td>
-                                        <td>
-                                            <button class="btn btn-danger">
-                                                <i class="fas fa-trash"></i> Verwijderen
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Locatie 2</td>
-                                        <td>Adres 2</td>
-                                        <td>15</td>
-                                        <td>
-                                            <button class="btn btn-danger">
-                                                <i class="fas fa-trash"></i> Verwijderen
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <!-- Voeg hier meer rijen toe voor andere locaties -->
-                                </tbody>
-                            </table>
+                <?php endif; ?>
+                <div class="row mx-1 justify-content-between">
+                    <?php
+                    if ($admin == true) :
+                    ?>
+                        <div class="col-xl-4 col-lg-5 mr-4" style="padding: 0;">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-dark">Add a hub location</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="row justify-content-center">
+                                        <div class="col-md-8">
+                                            <form action="" class="mx-1 mx-md-4" method="post">
+
+                                                <div class="d-flex flex-row align-items-center mb-4">
+                                                    <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                        <label class="form-label" for="form3Example1c">Location Name</label>
+                                                        <input type="text" id="form3Example1c" name="location" class="form-control" />
+                                                    </div>
+                                                </div>
+
+                                                <div class="d-flex justify-content-center mb-2">
+                                                    <input type="submit" name="add" data-mdb-button-init data-mdb-ripple-i nit class="btn btn-primary btn-block btn-lg text-body" style="font-weight: bold;" value="Add">
+                                                </div>
+                                                <div class="d-flex justify-content-center mb-2">
+                                                    <input type="submit" name="remove" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block btn-lg text-white" style="font-weight: bold;" value="Remove">
+                                                </div>
+
+                                            </form>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <div class="col-xl col-lg" style="padding: 0;">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-dark">Hub Locations</h6>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Location Name</th>
+                                            <th scope="col">Hub ID</th>
+                                        </tr>
+                                    </thead>
+                                    <?php
+                                    $locations = Location::getAllLocations();
+                                    foreach ($locations as $location) :
+                                    ?>
+
+                                        <tbody>
+                                            <tr>
+                                                <td><?php echo $location['location_name'] ?></td>
+                                                <td><?php echo $location['id'] ?></td>
+                                            </tr>
+                                        </tbody>
+                                    <?php endforeach; ?>
+                                </table>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
             <!-- End of Main Content -->
@@ -298,11 +422,11 @@ if (!empty($_POST)) {
 
     </div>
     <!-- End of Page Wrapper -->
+</div>
 
-
-    <script src="js/script.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    </body>
-    </head>
+<script src="js/script.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</head>
