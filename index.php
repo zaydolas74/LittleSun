@@ -38,7 +38,11 @@ if (!empty($_POST)) {
                 <div class="col-lg-6 mb-5 mb-lg-0">
                     <div class="card">
                         <div class="card-body py-4 px-5">
+<<<<<<< HEAD
                             <form action="" method="post">
+=======
+                            <form method="post" action="">
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
                                 <?php
                                 if (isset($error)) {
                                     echo "<div class='alert alert-danger'>$error</div>";
@@ -46,21 +50,28 @@ if (!empty($_POST)) {
                                 ?>
                                 <div data-mdb-input-init class="form-outline mb-4">
                                     <label class="form-label" for="form3Example3">Email address</label>
+<<<<<<< HEAD
                                     <input type="email" id="form3Example3" name="email" class="form-control" />
                                 </div>
                                 <div data-mdb-input-init class="form-outline mb-4">
                                     <label class="form-label" for="form3Example4">Password</label>
                                     <input type="password" id="form3Example4" name="password" class="form-control" />
+=======
+                                    <input type="email" id="form3Example3" class="form-control" name="email" />
+                                </div>
+                                <div data-mdb-input-init class="form-outline mb-4">
+                                    <label class="form-label" for="form3Example4">Password</label>
+                                    <input type="password" id="form3Example4" class="form-control" name="password" />
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
                                 </div>
                                 <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block w-100" style="font-weight: bold;" value="Sign in">
                             </form>
                         </div>
-                        <div class="card-footer py-4 flex-column align-items-center justify-content-center">
+                        <div class="card-footer py-3 flex-column align-items-center justify-content-center">
                             <div class="text-center ">
                                 <a href="#">
-                                    <p style="font-weight: bold;">Forgot password?</p>
+                                    <p style="font-weight: bold; margin:0;">Forgot password?</p>
                                 </a>
-                                <p>Don't have an account? <a href="register.php" style="font-weight: bold;">Create Account</a></p>
                             </div>
                         </div>
                     </div>
