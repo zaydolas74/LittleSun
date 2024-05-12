@@ -1,130 +1,143 @@
+<?php
+include_once(__DIR__ . '/classes/User.php');
+include_once(__DIR__ . '/classes/Location.php');
+include_once(__DIR__ . '/classes/ClockTime.php');
+session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: index.php');
+} else {
+    $admin = false;
+    $manager = false;
+    $users = User::getAllData();
+    foreach ($users as $user) :
+        if ($user['email'] == $_SESSION['user']->getEmail()) {
+            $username = $user['username'];
+            $email = $user['email'];
+            $name = $user['name'];
+            $id = $user['id'];
+            $location_name = Location::getLocationById($user['location_id']);
+            if ($user['type'] == 'Admin') {
+                $admin = true;
+            }
+            if ($user['type'] == 'Manager') {
+                $manager = true;
+            }
+        }
+    endforeach;
+    $clockedOut = true;
+    if (isset($_POST['clock_in'])) {
+        try {
+            $clockTime = new ClockTime();
+            $clockTime->clockIn($id);
+            $clockedIn = true;
+            $clockedOut = false;
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
+        }
+    }
+    if (isset($_POST['clock_out'])) {
+        try {
+            $clockTime = new ClockTime();
+            $clockTime->clockOut($id);
+            $clockedOut = true;
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
+        }
+    }
+    if (!empty($_POST)) {
+        try {
+            if ($_POST['password'] !== $_POST['rpassword']) {
+                throw new Exception("The passwords do not match.");
+            } else {
+                $user = new User();
+                $options = [
+                    'cost' => 12,
+                ];
+                $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT, $options);
+                $user->setName($_POST['name']);
+                $user->setUsername($_POST['username']);
+                $user->setEmail($_POST['email']);
+                $user->setPassword($hashedPassword);
+                $user->setLocation_id($_POST['hub_location']);
+                if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = __DIR__ . '/images/';
+                    $uploadFile = $uploadDir . basename($_FILES['photo']['name']);
+
+                    // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
+                    $uniqueFileName = uniqid() . '_' . basename($_FILES['photo']['name']);
+                    $uploadFile = $uploadDir . $uniqueFileName;
+
+                    if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadFile)) {
+                        // Unieke bestandsnaam opgeslagen in de database
+                        $user->setPhoto($uniqueFileName);
+                    } else {
+                        throw new Exception("Failed to move uploaded file.");
+                    }
+                }
+                $user->saveManager();
+            }
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
+        }
+    }
+    if (!empty($_POST)) {
+        try {
+            if ($_POST['passwordUser'] !== $_POST['rpasswordUser']) {
+                throw new Exception("The passwords do not match.");
+            } else {
+                $user = new User();
+                $options = [
+                    'cost' => 12,
+                ];
+                $hashedPassword = password_hash($_POST['passwordUser'], PASSWORD_DEFAULT, $options);
+                $user->setName($_POST['nameUser']);
+                $user->setUsername($_POST['userName']);
+                $user->setEmail($_POST['emailUser']);
+                $user->setPassword($hashedPassword);
+                $user->setLocation_id($location_name['id']);
+                if (isset($_FILES['photoUser']) && $_FILES['photoUser']['error'] === UPLOAD_ERR_OK) {
+                    $uploadDir = __DIR__ . '/images/';
+                    $uploadFile = $uploadDir . basename($_FILES['photoUser']['name']);
+
+                    // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
+                    $uniqueFileName = uniqid() . '_' . basename($_FILES['photoUser']['name']);
+                    $uploadFile = $uploadDir . $uniqueFileName;
+
+                    if (move_uploaded_file($_FILES['photoUser']['tmp_name'], $uploadFile)) {
+                        // Unieke bestandsnaam opgeslagen in de database
+                        $user->setPhoto($uniqueFileName);
+                    } else {
+                        throw new Exception("Failed to move uploaded file.");
+                    }
+                }
+                $user->save();
+            }
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
+        }
+    }
+    if (!empty($_POST)) {
+        try {
+            $location = new Location();
+            $location->setHub_location($_POST['location']);
+            if (isset($_POST['add'])) {
+                $location->addLocation();
+            } elseif (isset($_POST['remove'])) {
+                $location->removeLocation();
+            }
+        } catch (Throwable $ex) {
+            $error = $ex->getMessage();
+        }
+    }
+}
+?>
 <?php include_once 'bootstrap.php'; ?>
 
 
 <!-- Page Wrapper -->
 <div id="wrapper">
-
-    <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div>
-        </a>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" href="index.html">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading">
-            Interface
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>Components</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom Components:</h6>
-                    <a class="collapse-item" href="buttons.html">Buttons</a>
-                    <a class="collapse-item" href="cards.html">Cards</a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-wrench"></i>
-                <span>Utilities</span>
-            </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom Utilities:</h6>
-                    <a class="collapse-item" href="utilities-color.html">Colors</a>
-                    <a class="collapse-item" href="utilities-border.html">Borders</a>
-                    <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                    <a class="collapse-item" href="utilities-other.html">Other</a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading">
-            Addons
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Pages</span>
-            </a>
-            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Login Screens:</h6>
-                    <a class="collapse-item" href="login.html">Login</a>
-                    <a class="collapse-item" href="register.html">Register</a>
-                    <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                    <div class="collapse-divider"></div>
-                    <h6 class="collapse-header">Other Pages:</h6>
-                    <a class="collapse-item" href="404.html">404 Page</a>
-                    <a class="collapse-item" href="blank.html">Blank Page</a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Nav Item - Charts -->
-        <li class="nav-item">
-            <a class="nav-link" href="charts.html">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>Charts</span></a>
-        </li>
-
-        <!-- Nav Item - Tables -->
-        <li class="nav-item">
-            <a class="nav-link" href="tables.html">
-                <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
-
-        <!-- Sidebar Toggler (Sidebar) -->
-        <div class="text-center d-none d-md-inline">
-            <button class="rounded-circle border-0" id="sidebarToggle"></button>
-        </div>
-
-        <!-- Sidebar Message -->
-        <div class="sidebar-card d-none d-lg-flex">
-            <img class="sidebar-card-illustration mb-2" src="img/undraw_rocket.svg" alt="...">
-            <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
-            <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
-        </div>
-
-    </ul>
-    <!-- End of Sidebar -->
-
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/popup.css">
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
 
@@ -139,17 +152,7 @@
                     <i class="fa fa-bars"></i>
                 </button>
 
-                <!-- Topbar Search -->
-                <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                    <div class="input-group">
-                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
+
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">
@@ -176,11 +179,12 @@
 
                     <!-- Nav Item - Alerts -->
                     <li class="nav-item dropdown no-arrow mx-1">
-                        <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-bell fa-fw"></i>
-                            <!-- Counter - Alerts -->
-                            <span class="badge badge-danger badge-counter">3+</span>
-                        </a>
+                        <?php if ($manager == true) : ?>
+                            <a class="nav-link" href="hub.php">
+                                <!-- Counter - Alerts -->
+                                <span class="badge badge-danger badge-counter">hub</span>
+                            </a>
+                        <?php endif; ?>
                         <!-- Dropdown - Alerts -->
                         <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
                             <h6 class="dropdown-header">
@@ -225,11 +229,6 @@
 
                     <!-- Nav Item - Messages -->
                     <li class="nav-item dropdown no-arrow mx-1">
-                        <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-envelope fa-fw"></i>
-                            <!-- Counter - Messages -->
-                            <span class="badge badge-danger badge-counter">7</span>
-                        </a>
                         <!-- Dropdown - Messages -->
                         <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
                             <h6 class="dropdown-header">
@@ -283,13 +282,25 @@
                         </div>
                     </li>
 
+                    <a href="logout.php" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm d-sm-flex align-items-center justify-content-between"> Log out</a>
                     <div class="topbar-divider d-none d-sm-block"></div>
-
                     <!-- Nav Item - User Information -->
                     <li class="nav-item dropdown no-arrow">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
-                            <img class="img-profile rounded-circle" src="img/undraw_profile.svg">
+                            <?php
+                            if ($admin == true) {
+                                echo '<span class="mr-1 d-none d-lg-inline text-gray-600 small">🛡️</span>';
+                            }
+                            ?>
+                            <?php
+                            if ($manager == true) {
+                                echo '<span class="mr-1 d-none d-lg-inline text-gray-600 small">💼</span>';
+                            }
+                            ?>
+                            <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $username; ?></span>
+
+                            <!-- todo image profile pic -->
+                            <img class="img-profile rounded-circle" src="">
                         </a>
                         <!-- Dropdown - User Information -->
                         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -324,275 +335,310 @@
                 <!-- Page Heading -->
                 <div class="d-sm-flex align-items-center justify-content-between mb-4">
                     <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
-                    <a href="#" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i class="fas fa-download fa-sm text-white-50"></i> Generate Report</a>
                 </div>
 
-                <!-- Content Row -->
-                <div class="row">
-
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            Earnings (Monthly)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            Earnings (Annual)</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Tasks
-                                        </div>
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col-auto">
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">50%</div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="progress progress-sm mr-2">
-                                                    <div class="progress-bar bg-info" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </div>
+                <?php
+                if ($admin == true) :
+                ?>
+                    <div class="row">
+                        <!-- Area Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Add a hub manager</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
                                         </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-8">
+                                                <form action="" class="mx-1 mx-md-4" method="post" enctype="multipart/form-data">
+
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example1c">Name</label>
+                                                            <input type="text" id="form3Example1c" name="name" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example1c">Username</label>
+                                                            <input type="text" id="form3Example1c" name="username" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example3c">Email</label>
+                                                            <input type="email" id="form3Example3c" name="email" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                    <?php
+                                                    // if (isset($error)) {
+                                                    //     echo "<div class='alert alert-danger' role='alert'>$error</div>";
+                                                    // }
+                                                    ?>
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example4c">Password</label>
+                                                            <input type="password" id="form3Example4c" name="password" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row align-items-center mb-4 ">
+                                                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example4cd">Repeat Password</label>
+                                                            <input type="password" id="form3Example4cd" name="rpassword" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row align-items-center mb-4 ">
+                                                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example4cd">Hub Location nr</label>
+                                                            <input type="password" id="form3Example4cd" name="hub_location" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-upload fa-lg me-3 fa-fw"></i>
+                                                        <div class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="formFile">Upload Profile Picture</label>
+                                                            <input class="form-control" type="file" id="formFile" name="photo">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center">
+                                                        <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block btn-lg text-body" style="font-weight: bold;" value="Add">
+                                                    </div>
+                                                </form>
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Pending Requests Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            Pending Requests</div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                        <!-- Pie Chart -->
+                        <div class="col-xl-4 col-lg-5">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Add a hub location</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
+                                        </div>
                                     </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-comments fa-2x text-gray-300"></i>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-pie pt-4 pb-2">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-8">
+                                                <form action="" class="mx-1 mx-md-4" method="post">
+
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example1c">Location Name</label>
+                                                            <input type="text" id="form3Example1c" name="location" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center mb-2">
+                                                        <input type="submit" name="add" data-mdb-button-init data-mdb-ripple-i nit class="btn btn-primary btn-block btn-lg text-body" style="font-weight: bold;" value="Add">
+                                                    </div>
+                                                    <div class="d-flex justify-content-center mb-2">
+                                                        <input type="submit" name="remove" data-mdb-button-init data-mdb-ripple-init class="btn btn-danger btn-block btn-lg text-white" style="font-weight: bold;" value="Remove">
+                                                    </div>
+
+                                                </form>
+
+                                            </div>
+                                        </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                <?php endif; ?>
+                <?php
+                if ($manager == true) :
+                ?>
+                    <div class="row">
+                        <!-- Area Chart -->
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">Add User</h6>
+                                    <div class="dropdown no-arrow">
+                                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                            <div class="dropdown-header">Dropdown Header:</div>
+                                            <a class="dropdown-item" href="#">Action</a>
+                                            <a class="dropdown-item" href="#">Another action</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#">Something else here</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-area">
+                                        <div class="row justify-content-center">
+                                            <div class="col-md-8">
+                                                <form action="" class="mx-1 mx-md-4" method="post" enctype="multipart/form-data">
 
-                <!-- Content Row -->
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example1c">Name</label>
+                                                            <input type="text" id="form3Example1c" name="nameUser" class="form-control" />
+                                                        </div>
+                                                    </div>
 
-                <div class="row">
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example1c">Username</label>
+                                                            <input type="text" id="form3Example1c" name="userName" class="form-control" />
+                                                        </div>
+                                                    </div>
 
-                    <!-- Area Chart -->
-                    <div class="col-xl-8 col-lg-7">
-                        <div class="card shadow mb-4">
-                            <!-- Card Header - Dropdown -->
-                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Earnings Overview</h6>
-                                <div class="dropdown no-arrow">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                                        <div class="dropdown-header">Dropdown Header:</div>
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#">Something else here</a>
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example3c">Email</label>
+                                                            <input type="email" id="form3Example3c" name="emailUser" class="form-control" />
+                                                        </div>
+                                                    </div>
+                                                    <?php
+                                                    // if (isset($error)) {
+                                                    //     echo "<div class='alert alert-danger' role='alert'>$error</div>";
+                                                    // }
+                                                    ?>
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example4c">Password</label>
+                                                            <input type="password" id="form3Example4c" name="passwordUser" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row align-items-center mb-4 ">
+                                                        <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                        <div data-mdb-input-init class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="form3Example4cd">Repeat Password</label>
+                                                            <input type="password" id="form3Example4cd" name="rpasswordUser" class="form-control" />
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex flex-row align-items-center mb-4">
+                                                        <i class="fas fa-upload fa-lg me-3 fa-fw"></i>
+                                                        <div class="form-outline flex-fill mb-0">
+                                                            <label class="form-label" for="formFile">Upload Profile Picture</label>
+                                                            <input class="form-control" type="file" id="formFile" name="photoUser">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-flex justify-content-center">
+                                                        <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block btn-lg text-body" style="font-weight: bold;" value="Add">
+                                                    </div>
+                                                </form>
+
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <!-- Card Body -->
-                            <div class="card-body">
-                                <div class="chart-area">
-                                    <canvas id="myAreaChart"></canvas>
-                                </div>
-                            </div>
                         </div>
-                    </div>
 
-                    <!-- Pie Chart -->
-                    <div class="col-xl-4 col-lg-5">
-                        <div class="card shadow mb-4">
-                            <!-- Card Header - Dropdown -->
-                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">Revenue Sources</h6>
-                                <div class="dropdown no-arrow">
-                                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
-                                        <div class="dropdown-header">Dropdown Header:</div>
-                                        <a class="dropdown-item" href="#">Action</a>
-                                        <a class="dropdown-item" href="#">Another action</a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item" href="#">Something else here</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Card Body -->
-                            <div class="card-body">
-                                <div class="chart-pie pt-4 pb-2">
-                                    <canvas id="myPieChart"></canvas>
-                                </div>
-                                <div class="mt-4 text-center small">
-                                    <span class="mr-2">
-                                        <i class="fas fa-circle text-primary"></i> Direct
-                                    </span>
-                                    <span class="mr-2">
-                                        <i class="fas fa-circle text-success"></i> Social
-                                    </span>
-                                    <span class="mr-2">
-                                        <i class="fas fa-circle text-info"></i> Referral
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
-                </div>
+                <?php endif; ?>
 
                 <!-- Content Row -->
                 <div class="row">
 
                     <!-- Content Column -->
                     <div class="col-lg-6 mb-4">
-
                         <!-- Project Card Example -->
                         <div class="card shadow mb-4">
                             <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Projects</h6>
+                                <h6 class="m-0 font-weight-bold text-primary">Hub Locations</h6>
                             </div>
                             <div class="card-body">
-                                <h4 class="small font-weight-bold">Server Migration <span class="float-right">20%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar bg-danger" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Sales Tracking <span class="float-right">40%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar bg-warning" role="progressbar" style="width: 40%" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Customer Database <span class="float-right">60%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar" role="progressbar" style="width: 60%" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Payout Details <span class="float-right">80%</span></h4>
-                                <div class="progress mb-4">
-                                    <div class="progress-bar bg-info" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
-                                <h4 class="small font-weight-bold">Account Setup <span class="float-right">Complete!</span></h4>
-                                <div class="progress">
-                                    <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
+                                <?php
+                                $locations = Location::getAllLocations();
+                                foreach ($locations as $location) :
+                                ?>
+                                    <h4 class="small font-weight-bold"><?php echo $location['location_name']; ?><span class="float-right">Hub: <?php echo $location['id']; ?></span></h4>
+                                <?php endforeach; ?>
                             </div>
                         </div>
-
-                        <!-- Color System -->
-                        <div class="row">
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-primary text-white shadow">
-                                    <div class="card-body">
-                                        Primary
-                                        <div class="text-white-50 small">#4e73df</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-success text-white shadow">
-                                    <div class="card-body">
-                                        Success
-                                        <div class="text-white-50 small">#1cc88a</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-info text-white shadow">
-                                    <div class="card-body">
-                                        Info
-                                        <div class="text-white-50 small">#36b9cc</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-warning text-white shadow">
-                                    <div class="card-body">
-                                        Warning
-                                        <div class="text-white-50 small">#f6c23e</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-danger text-white shadow">
-                                    <div class="card-body">
-                                        Danger
-                                        <div class="text-white-50 small">#e74a3b</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-secondary text-white shadow">
-                                    <div class="card-body">
-                                        Secondary
-                                        <div class="text-white-50 small">#858796</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-light text-black shadow">
-                                    <div class="card-body">
-                                        Light
-                                        <div class="text-black-50 small">#f8f9fc</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-6 mb-4">
-                                <div class="card bg-dark text-white shadow">
-                                    <div class="card-body">
-                                        Dark
-                                        <div class="text-white-50 small">#5a5c69</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Clock In/Out</h6>
+                            </div>
+                            <div class="card-body">
+                                <form method="post">
+                                    <?php if ($clockedOut) : ?>
+                                    <button type="submit" name="clock_in" class="btn btn-primary btn-block">
+                                        <i class="fas fa-3x fa-clock mb-2"></i><br>Clock In
+                                    </button>
+                                    <?php endif; ?>
+                                    <?php if ($clockedIn) : ?>
+                                    <button type="submit" name="clock_out" class="btn btn-danger btn-block">
+                                        <i class="fas fa-3x fa-coffee mb-2"></i><br>Clock Out
+                                    </button>
+                                    <?php endif; ?>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="popup" id="clockPopup">
+                        <i class="fas fa-check-circle"></i>
+                        <div id="clockPopupText"></div>
+                    </div>
+                    <script src="js/showPopup.js"></script>
                     <div class="col-lg-6 mb-4">
 
                         <!-- Illustrations -->
-                        <div class="card shadow mb-4">
+                        <!-- <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Illustrations</h6>
                             </div>
@@ -606,10 +652,10 @@
                                 <a target="_blank" rel="nofollow" href="https://undraw.co/">Browse Illustrations on
                                     unDraw &rarr;</a>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Approach -->
-                        <div class="card shadow mb-4">
+                        <!-- <div class="card shadow mb-4">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
                             </div>
@@ -620,7 +666,7 @@
                                 <p class="mb-0">Before working with this theme, you should become familiar with the
                                     Bootstrap framework, especially the utility classes.</p>
                             </div>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>
@@ -635,7 +681,7 @@
         <footer class="sticky-footer bg-white">
             <div class="container my-auto">
                 <div class="copyright text-center my-auto">
-                    <span>Copyright &copy; Your Website 2021</span>
+                    <span>Copyright &copy; LittleSun 2024</span>
                 </div>
             </div>
         </footer>
@@ -648,9 +694,7 @@
 <!-- End of Page Wrapper -->
 
 <!-- Scroll to Top Button-->
-<a class="scroll-to-top rounded" href="#page-top">
-    <i class="fas fa-angle-up"></i>
-</a>
+
 
 <!-- Logout Modal-->
 <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
