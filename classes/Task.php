@@ -53,4 +53,14 @@ class Task
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+
+    public static function getAllUserTasksWithTaskName()
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT user_task.*, task.type AS task_type FROM user_task INNER JOIN task ON user_task.taskId = task.id";
+        $statement = $conn->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 }
