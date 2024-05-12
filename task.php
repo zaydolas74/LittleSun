@@ -2,7 +2,8 @@
 include_once(__DIR__ . '/classes/User.php');
 include_once(__DIR__ . '/classes/Location.php');
 include_once(__DIR__ . '/classes/Task.php');
-include_once(__DIR__ . '/classes/TimeOff.php');
+
+
 session_start();
 if (!isset($_SESSION['user'])) {
     header('location: index.php');
@@ -16,21 +17,58 @@ if (!isset($_SESSION['user'])) {
             $location_name = Location::getLocationById($user['location_id']);
             if ($user['type'] == 'Manager') {
                 $manager = true;
-            } else {
-                header('location: timeOffUser.php');
             }
         }
     endforeach;
 }
+
+$tasks = Task::getAllTasks();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    try {
+        $user_id = $_POST['user'];
+        $task_id = $_POST['task'];
+        $date = $_POST['date'];
+        $start_time = $_POST['start_time'];
+        $end_time = $_POST['end_time'];
+
+        $task = new Task();
+        $task->createTask($user_id, $task_id, $date, $start_time, $end_time);
+
+        if ($task) {
+            $succes_message = "Task assigned successfully";
+        }
+    } catch (Throwable $ex) {
+        $error = $ex->getMessage();
+    }
+
+    if ($start_time >= $end_time) {
+        $error = "End time must be greater than start time";
+    }
+}
+
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub</title>
+    <title>Task</title>
+    <style>
+        .profile-photo-placeholder {
+            width: 100px;
+            height: 100px;
+            overflow: hidden;
+            border-radius: 50%;
+        }
 
+        .profile-photo-placeholder img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 
 <body>
@@ -45,7 +83,7 @@ if (!isset($_SESSION['user'])) {
 
             <!-- Sidebar - Brand -->
             <div class="container justify-content-center" id="sidebar-logo">
-                <a class="navbar-brand py-3 m-0 justify-content-center" href="#">
+                <a class="navbar-brand py-3 m-0 justify-content-center" href="home.php">
                     <img src="images/Little-Sun-Logo.png" alt="" id="big-logo" height="35">
                     <img src="images/Little-Sun-Logo-small.png" id="small-logo" alt="" height="50">
                 </a>
@@ -113,7 +151,6 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
             <?php endif; ?>
-
             <!-- Nav Item - Charts
         <li class="nav-item">
             <a class="nav-link" href="charts.html">
@@ -198,57 +235,54 @@ if (!isset($_SESSION['user'])) {
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-dark">Time Off Requests</h6>
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-dark">Assign Task</h6>
                         </div>
                         <div class="card-body">
-
-                            <form action="" methode="get">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Start Date</th>
-                                            <th scope="col">End Date</th>
-                                            <th scope="col">Reason</th>
-                                            <th scope="col">Day Type</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $timeOffs = TimeOff::getAllTimeOffRequestsAllUsers();
-                                        foreach ($timeOffs as $timeOff) :
-                                            $user = User::getUserId($timeOff['userId']);
-                                        ?>
-                                            <tr>
-                                                <td><?php echo ucfirst($name) ?></td>
-                                                <td><?php echo $timeOff['start_time']; ?></td>
-                                                <td><?php echo $timeOff['end_time']; ?></td>
-                                                <td><?php echo ucfirst($timeOff['reason']); ?></td>
-                                                <td><?php echo $timeOff['day_type']; ?></td>
-                                                <td><?php
-                                                    if ($timeOff['status'] == 0) {
-                                                        echo 'Pending';
-                                                    } else {
-                                                        echo $timeOff['status'];
-                                                    }
-                                                    ?></td>
-                                                <td>
-                                                    <a href="acceptTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-success">Approve</a>
-                                                    <a href="rejectTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-danger">Reject</a>
-                                                </td>
-                                            </tr>
+                            <form action="" method="post">
+                                <div class="form-group">
+                                    <label for="user">Select User:</label>
+                                    <?php
+                                    if (isset($error)) {
+                                        echo "<div class='alert alert-danger'>$error</div>";
+                                    }
+                                    if (isset($succes_message)) {
+                                        echo "<div class='alert alert-success'>$succes_message</div>";
+                                    }
+                                    ?>
+                                    <select class="form-control" name="user" id="user">
+                                        <?php foreach ($users as $u) : ?>
+                                            <option value="<?php echo $u['id']; ?>"><?php echo $u['username']; ?></option>
                                         <?php endforeach; ?>
-                                    </tbody>
-                                </table>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="task">Select Task:</label>
+                                    <select class="form-control" name="task" id="task">
+                                        <?php foreach ($tasks as $task) : ?>
+                                            <option value="<?php echo $task['id']; ?>"><?php echo $task['type']; ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="date">Date:</label>
+                                    <input type="date" class="form-control" name="date" id="date" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="start_time">Start Time:</label>
+                                    <input type="time" class="form-control" name="start_time" id="start_time" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_time">End Time:</label>
+                                    <input type="time" class="form-control" name="end_time" id="end_time" required>
+                                </div>
+                                <button type="submit" name="assign_task" class="btn btn-primary">Assign Task</button>
                             </form>
-                        </div>
 
+                        </div>
                     </div>
+
                 </div>
-                <!-- End of Main Content -->
 
 
 
@@ -258,6 +292,7 @@ if (!isset($_SESSION['user'])) {
         </div>
         <!-- End of Page Wrapper -->
     </div>
+
 </body>
 
 </html>

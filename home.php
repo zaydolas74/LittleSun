@@ -175,16 +175,20 @@ if (!isset($_SESSION['user'])) {
         <hr class="sidebar-divider">
 
         <!-- Heading -->
-        <div class="sidebar-heading">
-            TEST
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
         <?php if ($manager == true) : ?>
+            <div class="sidebar-heading">
+                Manager Tools
+            </div>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="hub.php">
                     <i class="fa-brands fa-hubspot"></i>
                     <span>Manager Hub</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="task.php">
+                    <i class="fas fa-tasks"></i>
+                    <span>Asign Task</span>
                 </a>
             </li>
         <?php endif; ?>
