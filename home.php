@@ -27,6 +27,7 @@ if (!isset($_SESSION['user'])) {
         }
     endforeach;
     $clockedOut = true;
+    $clockedIn = false;
     if (isset($_POST['clock_in'])) {
         try {
             $clockTime = new ClockTime();
@@ -48,35 +49,37 @@ if (!isset($_SESSION['user'])) {
     }
     if (!empty($_POST)) {
         try {
-            if ($_POST['password'] !== $_POST['rpassword']) {
-                throw new Exception("The passwords do not match.");
-            } else {
-                $user = new User();
-                $options = [
-                    'cost' => 12,
-                ];
-                $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT, $options);
-                $user->setName($_POST['name']);
-                $user->setUsername($_POST['username']);
-                $user->setEmail($_POST['email']);
-                $user->setPassword($hashedPassword);
-                $user->setLocation_id($_POST['hub_location']);
-                if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-                    $uploadDir = __DIR__ . '/images/';
-                    $uploadFile = $uploadDir . basename($_FILES['photo']['name']);
-
-                    // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
-                    $uniqueFileName = uniqid() . '_' . basename($_FILES['photo']['name']);
-                    $uploadFile = $uploadDir . $uniqueFileName;
-
-                    if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadFile)) {
-                        // Unieke bestandsnaam opgeslagen in de database
-                        $user->setPhoto($uniqueFileName);
-                    } else {
-                        throw new Exception("Failed to move uploaded file.");
+            if (isset($_POST['password']) && isset($_POST['rpassword'])) {
+                if ($_POST['password'] !== $_POST['rpassword']) {
+                    throw new Exception("The passwords do not match.");
+                } else {
+                    $user = new User();
+                    $options = [
+                        'cost' => 12,
+                    ];
+                    $hashedPassword = password_hash($_POST['password'], PASSWORD_DEFAULT, $options);
+                    $user->setName($_POST['name']);
+                    $user->setUsername($_POST['username']);
+                    $user->setEmail($_POST['email']);
+                    $user->setPassword($hashedPassword);
+                    $user->setLocation_id($_POST['hub_location']);
+                    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                        $uploadDir = __DIR__ . '/images/';
+                        $uploadFile = $uploadDir . basename($_FILES['photo']['name']);
+                        
+                        // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
+                        $uniqueFileName = uniqid() . '_' . basename($_FILES['photo']['name']);
+                        $uploadFile = $uploadDir . $uniqueFileName;
+                        
+                        if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadFile)) {
+                            // Unieke bestandsnaam opgeslagen in de database
+                            $user->setPhoto($uniqueFileName);
+                        } else {
+                            throw new Exception("Failed to move uploaded file.");
+                        }
                     }
+                    $user->saveManager();
                 }
-                $user->saveManager();
             }
         } catch (Throwable $ex) {
             $error = $ex->getMessage();
@@ -84,6 +87,7 @@ if (!isset($_SESSION['user'])) {
     }
     if (!empty($_POST)) {
         try {
+            if (isset($_POST['passwordUser']) && isset($_POST['rpasswordUser'])) {
             if ($_POST['passwordUser'] !== $_POST['rpasswordUser']) {
                 throw new Exception("The passwords do not match.");
             } else {
@@ -114,6 +118,7 @@ if (!isset($_SESSION['user'])) {
                 }
                 $user->save();
             }
+        }
         } catch (Throwable $ex) {
             $error = $ex->getMessage();
         }
@@ -121,12 +126,14 @@ if (!isset($_SESSION['user'])) {
     if (!empty($_POST)) {
         try {
             $location = new Location();
+            if (isset($_POST['location'])) {
             $location->setHub_location($_POST['location']);
             if (isset($_POST['add'])) {
                 $location->addLocation();
             } elseif (isset($_POST['remove'])) {
                 $location->removeLocation();
             }
+        }
         } catch (Throwable $ex) {
             $error = $ex->getMessage();
         }
@@ -283,8 +290,7 @@ if (!isset($_SESSION['user'])) {
 
                         </a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <a class="dropdown-item" href="#">TEST</a>
-                            <a class="dropdown-item" href="#">TEST</a>
+                            <!-- <a class="dropdown-item" href="#">TEST</a> -->
                             <a class="dropdown-item" href="logout.php">Logout</a>
                         </div>
                     </li>
@@ -459,7 +465,6 @@ if (!isset($_SESSION['user'])) {
                             <i class="fas fa-check-circle"></i>
                             <div id="clockPopupText"></div>
                         </div>
-                        <script src="js/showPopup.js"></script>
                         <div class="col-lg-6 mb-4">
 
                         </div>
@@ -481,7 +486,7 @@ if (!isset($_SESSION['user'])) {
 
 <!-- End of Page Wrapper -->
 
-
+<!-- <script src="js/showPopup.js"></script> -->
 <script src="js/script.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>

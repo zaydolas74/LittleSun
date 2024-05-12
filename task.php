@@ -251,9 +251,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     }
                                     ?>
                                     <select class="form-control" name="user" id="user">
-                                        <?php foreach ($users as $u) : ?>
+                                        <?php foreach ($users as $u) :
+                                            if ($u['type'] == 'User') :
+                                            ?>
                                             <option value="<?php echo $u['id']; ?>"><?php echo $u['username']; ?></option>
-                                        <?php endforeach; ?>
+                                        <?php 
+                                            endif;
+                                    endforeach; ?>
                                     </select>
                                 </div>
                                 <div class="form-group">

@@ -203,7 +203,7 @@ $events = array_map(function ($task) {
                                     </span>
                                     <span class="mr-2 d-none d-lg-inline text-dark ">
                                         <?php
-                                        echo ucfirst($username)
+                                        echo ucfirst($username);
                                         ?>
                                     </span>
                                 </div>
@@ -211,7 +211,6 @@ $events = array_map(function ($task) {
 
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#">TEST</a>
                                 <a class="dropdown-item" href="#">TEST</a>
                                 <a class="dropdown-item" href="logout.php">Logout</a>
                             </div>
