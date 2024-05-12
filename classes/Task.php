@@ -14,6 +14,7 @@ class Task
         return $result;
     }
 
+
     public static function getAllTasks()
     {
         $conn = Db::getConnection();

@@ -39,7 +39,11 @@ class User
         $result = $statement->execute();
         return $result;
     }
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
     public function login()
     {
         $conn = Db::getConnection();
@@ -66,6 +70,8 @@ class User
         return $result;
     }
 
+<<<<<<< HEAD
+=======
     public static function getUserId($email)
     {
         $conn = Db::getConnection();
@@ -77,6 +83,7 @@ class User
         return $result;
     }
 
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
     /**
      * Get the value of name
      */
@@ -159,7 +166,11 @@ class User
 
     /**
      * Get the value of photo
+<<<<<<< HEAD
+     */ 
+=======
      */
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
     public function getPhoto()
     {
         return $this->photo;
@@ -169,7 +180,11 @@ class User
      * Set the value of photo
      *
      * @return  self
+<<<<<<< HEAD
+     */ 
+=======
      */
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
     public function setPhoto($photo)
     {
         $this->photo = $photo;
@@ -179,7 +194,11 @@ class User
 
     /**
      * Get the value of location_id
+<<<<<<< HEAD
+     */ 
+=======
      */
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
     public function getLocation_id()
     {
         return $this->location_id;
@@ -189,7 +208,11 @@ class User
      * Set the value of location_id
      *
      * @return  self
+<<<<<<< HEAD
+     */ 
+=======
      */
+>>>>>>> 1b71aaafc9125ee132aefef79598b8f4fcfb0e50
     public function setLocation_id($location_id)
     {
         $this->location_id = $location_id;
