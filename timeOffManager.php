@@ -86,9 +86,9 @@ if (!isset($_SESSION['user'])) {
 
             <!-- Nav Item - Utilities Collapse Menu -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
+                <a class="nav-link collapsed" href="calender.php">
                     <i class='far fa-calendar-alt'></i>
-                    <span>Calander</span>
+                    <span>Calender</span>
                 </a>
             </li>
 

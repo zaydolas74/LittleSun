@@ -1,7 +1,7 @@
 <?php
-include_once(__DIR__ . '/classes/User.php');
-include_once(__DIR__ . '/classes/Location.php');
 include_once(__DIR__ . '/classes/Task.php');
+include_once(__DIR__ . '/classes/User.php');
+
 session_start();
 if (!isset($_SESSION['user'])) {
     header('location: index.php');
@@ -12,39 +12,57 @@ if (!isset($_SESSION['user'])) {
             $username = $user['username'];
             $email = $user['email'];
             $name = $user['name'];
-            $location_name = Location::getLocationById($user['location_id']);
             if ($user['type'] == 'Manager') {
                 $manager = true;
             }
         }
     endforeach;
 }
+// Fetch events from the database
+$tasks = Task::getAllUserTasks();
+
+// Format the events with start and end times
+$events = array_map(function ($task) {
+    // Combine date and time to create ISO 8601 datetime format
+    $start = $task['date'] . 'T' . $task['start_time'] . ':00';
+    $end = $task['date'] . 'T' . $task['end_time'] . ':00';
+
+    // Create the event object
+    return [
+        'id' => $task['id'],
+        'title' => 'Task ' . $task['taskId'],
+        'start' => $start,
+        'end' => $end
+    ];
+}, $tasks);
 ?>
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hub</title>
-    <style>
-        .profile-photo-placeholder {
-            width: 100px;
-            height: 100px;
-            overflow: hidden;
-            border-radius: 50%;
-        }
-
-        .profile-photo-placeholder img {
-            width: 100%;
-            height: auto;
-        }
-    </style>
+    <meta charset='utf-8' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: <?php echo json_encode($events); ?>,
+                headerToolbar: {
+                    start: 'dayGridMonth,timeGridWeek,timeGridDay',
+                    center: 'title',
+                    end: 'prevYear,prev,next,nextYear'
+                },
+            });
+            calendar.render();
+        });
+    </script>
 </head>
 
 <body>
     <?php include_once 'bootstrap.php'; ?>
-
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -201,41 +219,8 @@ if (!isset($_SESSION['user'])) {
                     </ul>
 
                 </nav>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><?php echo $location_name['location_name']; ?> - Hub</h1>
-                    </div>
-                    <div class="col-xl-4 col-lg px-0">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-dark">List of Users</h6>
-                            </div>
-                            <div class="card-body">
-                                <?php foreach ($users as $user) : ?>
-                                    <?php if ($user['type'] == 'User') : ?>
-                                        <div class="d-flex align-items-center justify-content-between mb-3">
-                                            <div class="profile-photo-placeholder mr-3">
-                                                <img src="images/<?php echo $user['profile_picture']; ?>" alt="foto">
-                                            </div>
-                                            <div>
-                                                <h4 class="medium font-weight-regular"><?php echo $user['username']; ?></h4>
-                                                <?php $task = Task::getTaskById($user['task_id']); ?>
-                                                <span class="float-right">Task: <?php echo $task['type']; ?></span>
-                                            </div>
-                                        </div>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-
-                    </div>
+                <div id='calendar' class="container">
                 </div>
-                <!-- End of Main Content -->
-
 
 
             </div>
@@ -244,7 +229,6 @@ if (!isset($_SESSION['user'])) {
         </div>
         <!-- End of Page Wrapper -->
     </div>
-
 </body>
 
 </html>

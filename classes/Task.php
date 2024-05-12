@@ -42,4 +42,14 @@ class Task
             return false;
         }
     }
+
+    public static function getAllUserTasks()
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT * FROM user_task";
+        $statement = $conn->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 }
