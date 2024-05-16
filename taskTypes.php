@@ -28,10 +28,6 @@ if (!isset($_SESSION['user'])) {
         }
     endforeach;
 }
-
-    $task = Task::getAllTasks();
-
-   
    
 ?>
 

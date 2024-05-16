@@ -121,7 +121,14 @@ if (!isset($_SESSION['user'])) {
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-           
+            <li class="nav-item">
+                <?php if ($admin == false && $manager== false) { ?>
+                    <a class="nav-link collapsed" href="userTask.php">
+                    <i class="fas fa-tasks"></i>
+                    <span>My Task</span>
+                    </a>
+                <?php }  ?>
+            </li>
 
 
             <!-- Heading -->

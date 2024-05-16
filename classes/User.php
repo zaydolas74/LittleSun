@@ -3,6 +3,7 @@ include_once(__DIR__ . '/Db.php');
 class User
 {
     private $name;
+    private $id;
     private $username;
     private $email;
     private $password;
