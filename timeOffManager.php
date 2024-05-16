@@ -203,7 +203,7 @@ if (!isset($_SESSION['user'])) {
                         </div>
                         <div class="card-body">
 
-                            <form action="" methode="get">
+                            <form action="" method="get">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
@@ -219,8 +219,10 @@ if (!isset($_SESSION['user'])) {
                                     <tbody>
                                         <?php
                                         $timeOffs = TimeOff::getAllTimeOffRequestsAllUsers();
+
                                         foreach ($timeOffs as $timeOff) :
-                                            $user = User::getUserId($timeOff['userId']);
+                                            $name = User::getUserById($timeOff['userId']);
+                                            $name = $name['name'];
                                         ?>
                                             <tr>
                                                 <td><?php echo ucfirst($name) ?></td>
@@ -242,6 +244,7 @@ if (!isset($_SESSION['user'])) {
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
+
                                 </table>
                             </form>
                         </div>
