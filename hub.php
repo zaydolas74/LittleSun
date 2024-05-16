@@ -12,9 +12,12 @@ if (!isset($_SESSION['user'])) {
             $username = $user['username'];
             $email = $user['email'];
             $name = $user['name'];
+            $users = User::getUsersByManagerLocation($user['location_id']);
             $location_name = Location::getLocationById($user['location_id']);
             if ($user['type'] == 'Manager') {
                 $manager = true;
+            } else {
+                header('location: home.php');
             }
         }
     endforeach;
@@ -224,7 +227,7 @@ if (!isset($_SESSION['user'])) {
                                             <div>
                                                 <h4 class="medium font-weight-regular"><?php echo $user['username']; ?></h4>
                                                 <?php $task = Task::getTaskById($user['task_id']); ?>
-                                                <span class="float-right">Task: <?php echo $task['type']; ?></span>
+                                                <span class="float-right">Taak: <?php echo $task['type']; ?></span>
                                             </div>
                                         </div>
                                     <?php endif; ?>

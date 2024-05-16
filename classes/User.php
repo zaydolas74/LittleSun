@@ -81,6 +81,17 @@ class User
         return $result;
     }
 
+    public static function getUsersByManagerLocation($managerLocationId)
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT * FROM user WHERE location_id = :location_id";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':location_id', $managerLocationId);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
     /**
      * Get the value of name
      */
