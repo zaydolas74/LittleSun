@@ -203,18 +203,6 @@ if (!isset($_SESSION['user'])) {
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <div class="sidebar-heading">
-                Admin Tools
-            </div>
-        <li class="nav-item">
-                <?php if ($admin == true) { ?>
-                    <a class="nav-link collapsed" href=".php">
-                        <i class='far fa-clock'></i>
-                        <span>Task types</span>
-                    </a>
-                <?php }  ?>
-            </li>
-
         <!-- Heading -->
         <?php if ($manager == true) : ?>
             <div class="sidebar-heading">
@@ -249,8 +237,24 @@ if (!isset($_SESSION['user'])) {
         </li>
         -->
 
-    
+        <!-- Divider -->
+           <li class="nav-item">
+                <?php if ($admin == true) { ?>
+                    <a class="nav-link collapsed" href="timeOffManager.php">
+                        <i class='far fa-clock'></i>
+                        <span>Task types</span>
+                    </a>
+                <?php }  ?>
+            </li>
 
+            <li class="nav-item">
+                <?php if ($admin == false && $manager== false) { ?>
+                    <a class="nav-link collapsed" href="userTask.php">
+                    <i class="fas fa-tasks"></i>
+                    <span>My Task</span>
+                    </a>
+                <?php }  ?>
+            </li>
 
     </ul>
     <!-- End of Sidebar -->

@@ -42,6 +42,7 @@ class Task
             throw new Exception('end time must be greater than start time');
             return false;
         }
+        
 
 
     }
@@ -78,6 +79,19 @@ class Task
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+
+    public static function getAllUserTasksById($userId)
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT * FROM user_task WHERE userId = :userId";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':userId', $userId);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+  
 
     public static function getAllUserTasksWithTaskName()
     {

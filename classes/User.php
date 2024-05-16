@@ -3,6 +3,7 @@ include_once(__DIR__ . '/Db.php');
 class User
 {
     private $name;
+    private $id;
     private $username;
     private $email;
     private $password;
@@ -79,6 +80,15 @@ class User
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
+    }
+
+    public function getId(){
+        return $this->id;
+    }
+
+    public function setId($id){
+        $this->id = $id;
+        return $this;
     }
 
     /**
