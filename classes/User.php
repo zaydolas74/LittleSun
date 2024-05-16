@@ -40,6 +40,21 @@ class User
         return $result;
     }
 
+    public function saveAdmin()
+    {
+        $conn = Db::getConnection();
+        $sql = "INSERT INTO user (type, name, username, email, password, profile_picture, location_id) VALUES ('Admin', :name, :username, :email, :password, :photo, :location_id)";
+        $statement = $conn->prepare($sql);
+        $statement->bindValue(':name', $this->name);
+        $statement->bindValue(':username', $this->username);
+        $statement->bindValue(':email', $this->email);
+        $statement->bindValue(':password', $this->password);
+        $statement->bindValue(':photo', $this->photo);
+        $statement->bindValue(':location_id', $this->location_id);
+        $result = $statement->execute();
+        return $result;
+    }
+
     public function login()
     {
         $conn = Db::getConnection();

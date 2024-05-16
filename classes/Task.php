@@ -42,9 +42,32 @@ class Task
             throw new Exception('end time must be greater than start time');
             return false;
         }
-        
+
 
     }
+
+    public function editTask($id, $type)
+    {
+        $conn = Db::getConnection();
+        $sql = "UPDATE task SET type = :type WHERE id = :id";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':id', $id);
+        $statement->bindParam(':type', $type);
+        $result = $statement->execute();
+        return $result;
+    }
+
+    public function deleteTask($id)
+    {
+        $conn = Db::getConnection();
+        $sql = "DELETE FROM task WHERE id = :id";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':id', $id);
+        $result = $statement->execute();
+        return $result;
+    }
+
+
 
     public static function getAllUserTasks()
     {

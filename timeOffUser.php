@@ -121,6 +121,9 @@ if (!isset($_SESSION['user'])) {
             <!-- Divider -->
             <hr class="sidebar-divider">
 
+           
+
+
             <!-- Heading -->
 
 

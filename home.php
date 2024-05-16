@@ -24,6 +24,7 @@ if (!isset($_SESSION['user'])) {
             if ($user['type'] == 'Manager') {
                 $manager = true;
             }
+            
         }
     endforeach;
     $clockedOut = true;
@@ -160,6 +161,7 @@ if (!isset($_SESSION['user'])) {
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
 
+
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
             <a class="nav-link" href="home.php">
@@ -201,6 +203,18 @@ if (!isset($_SESSION['user'])) {
         <!-- Divider -->
         <hr class="sidebar-divider">
 
+        <div class="sidebar-heading">
+                Admin Tools
+            </div>
+        <li class="nav-item">
+                <?php if ($admin == true) { ?>
+                    <a class="nav-link collapsed" href=".php">
+                        <i class='far fa-clock'></i>
+                        <span>Task types</span>
+                    </a>
+                <?php }  ?>
+            </li>
+
         <!-- Heading -->
         <?php if ($manager == true) : ?>
             <div class="sidebar-heading">
@@ -235,6 +249,7 @@ if (!isset($_SESSION['user'])) {
         </li>
         -->
 
+    
 
 
     </ul>
