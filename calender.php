@@ -52,9 +52,15 @@ $events = array_map(function ($task) {
                 initialView: 'dayGridMonth',
                 events: <?php echo json_encode($events); ?>,
                 headerToolbar: {
-                    start: 'dayGridMonth,timeGridWeek,timeGridDay',
+                    start: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
                     center: 'title',
                     end: 'prevYear,prev,next,nextYear'
+                },
+                eventTimeFormat: { // Hier voegen we de configuratie toe om de notatie van de tijden aan te passen
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    omitZeroMinute: false,
+                    meridiem: true // Hier zetten we meridiem (AM/PM) uit
                 },
             });
             calendar.render();

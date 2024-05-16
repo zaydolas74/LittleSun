@@ -93,6 +93,17 @@ class User
         return $result;
     }
 
+    public static function getUserById($id)
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT * FROM user WHERE id = :id";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':id', $id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
     /**
      * Get the value of name
      */
