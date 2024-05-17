@@ -173,7 +173,7 @@ if (!isset($_SESSION['user'])) {
 
         <!-- Heading -->
         <div class="sidebar-heading">
-            Calander
+            Calender
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->

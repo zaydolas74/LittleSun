@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Calander
+                Calender
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->

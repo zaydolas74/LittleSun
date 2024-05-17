@@ -24,11 +24,10 @@ if (!isset($_SESSION['user'])) {
             if ($user['type'] == 'Manager') {
                 $manager = true;
             }
-            
         }
     endforeach;
 }
-   
+
 ?>
 
 <!-- Page Wrapper -->
@@ -63,7 +62,7 @@ if (!isset($_SESSION['user'])) {
 
         <!-- Heading -->
         <div class="sidebar-heading">
-            Calander
+            Calender
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->
@@ -93,16 +92,16 @@ if (!isset($_SESSION['user'])) {
         <hr class="sidebar-divider">
 
         <div class="sidebar-heading">
-                Admin Tools
-            </div>
+            Admin Tools
+        </div>
         <li class="nav-item">
-                <?php if ($admin == true) { ?>
-                    <a class="nav-link collapsed" href=".php">
-                        <i class='far fa-clock'></i>
-                        <span>Task types</span>
-                    </a>
-                <?php }  ?>
-            </li>
+            <?php if ($admin == true) { ?>
+                <a class="nav-link collapsed" href=".php">
+                    <i class='far fa-clock'></i>
+                    <span>Task types</span>
+                </a>
+            <?php }  ?>
+        </li>
 
         <!-- Heading -->
         <?php if ($manager == true) : ?>
@@ -138,7 +137,7 @@ if (!isset($_SESSION['user'])) {
         </li>
         -->
 
-    
+
 
 
     </ul>
@@ -248,7 +247,7 @@ if (!isset($_SESSION['user'])) {
                 </div>
 
             </div>
-          
+
             <!-- End of Content Wrapper -->
 
         </div>
@@ -260,41 +259,41 @@ if (!isset($_SESSION['user'])) {
 
 <!-- <script src="js/showPopup.js"></script> -->
 <script>
-document.addEventListener('DOMContentLoaded', (event) => {
-    document.querySelectorAll('.btn-edit').forEach(button => {
-        button.addEventListener('click', function() {
-            var taskId = this.getAttribute('data-id');
-            var taskTypeElement = document.querySelector(`.task-type[data-id='${taskId}']`);
-            var taskType = taskTypeElement.textContent;
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.querySelectorAll('.btn-edit').forEach(button => {
+            button.addEventListener('click', function() {
+                var taskId = this.getAttribute('data-id');
+                var taskTypeElement = document.querySelector(`.task-type[data-id='${taskId}']`);
+                var taskType = taskTypeElement.textContent;
 
-            taskTypeElement.innerHTML = `<input type='text' value='${taskType}' class='edit-input' />`;
+                taskTypeElement.innerHTML = `<input type='text' value='${taskType}' class='edit-input' />`;
 
-            this.style.display = 'none';
-            document.querySelector(`.btn-save[data-id='${taskId}']`).style.display = 'inline';
+                this.style.display = 'none';
+                document.querySelector(`.btn-save[data-id='${taskId}']`).style.display = 'inline';
+            });
+        });
+
+        document.querySelectorAll('.btn-save').forEach(button => {
+            button.addEventListener('click', function() {
+                var taskId = this.getAttribute('data-id');
+                var taskTypeElement = document.querySelector(`.task-type[data-id='${taskId}']`);
+                var newTaskType = taskTypeElement.querySelector('.edit-input').value;
+
+                // AJAX request to update task type
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'updateTask.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        taskTypeElement.textContent = newTaskType;
+                        button.style.display = 'none';
+                        document.querySelector(`.btn-edit[data-id='${taskId}']`).style.display = 'inline';
+                    }
+                };
+                xhr.send(`id=${taskId}&type=${encodeURIComponent(newTaskType)}`);
+            });
         });
     });
-
-    document.querySelectorAll('.btn-save').forEach(button => {
-        button.addEventListener('click', function() {
-            var taskId = this.getAttribute('data-id');
-            var taskTypeElement = document.querySelector(`.task-type[data-id='${taskId}']`);
-            var newTaskType = taskTypeElement.querySelector('.edit-input').value;
-
-            // AJAX request to update task type
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'updateTask.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4 && xhr.status === 200) {
-                    taskTypeElement.textContent = newTaskType;
-                    button.style.display = 'none';
-                    document.querySelector(`.btn-edit[data-id='${taskId}']`).style.display = 'inline';
-                }
-            };
-            xhr.send(`id=${taskId}&type=${encodeURIComponent(newTaskType)}`);
-        });
-    });
-});
 </script>
 
 

@@ -100,7 +100,7 @@ $events = array_map(function ($task) {
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Calander
+                Calender
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
