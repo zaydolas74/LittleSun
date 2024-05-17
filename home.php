@@ -24,7 +24,6 @@ if (!isset($_SESSION['user'])) {
             if ($user['type'] == 'Manager') {
                 $manager = true;
             }
-            
         }
     endforeach;
     $clockedOut = true;
@@ -67,11 +66,11 @@ if (!isset($_SESSION['user'])) {
                     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
                         $uploadDir = __DIR__ . '/images/';
                         $uploadFile = $uploadDir . basename($_FILES['photo']['name']);
-                        
+
                         // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
                         $uniqueFileName = uniqid() . '_' . basename($_FILES['photo']['name']);
                         $uploadFile = $uploadDir . $uniqueFileName;
-                        
+
                         if (move_uploaded_file($_FILES['photo']['tmp_name'], $uploadFile)) {
                             // Unieke bestandsnaam opgeslagen in de database
                             $user->setPhoto($uniqueFileName);
@@ -89,37 +88,37 @@ if (!isset($_SESSION['user'])) {
     if (!empty($_POST)) {
         try {
             if (isset($_POST['passwordUser']) && isset($_POST['rpasswordUser'])) {
-            if ($_POST['passwordUser'] !== $_POST['rpasswordUser']) {
-                throw new Exception("The passwords do not match.");
-            } else {
-                $user = new User();
-                $options = [
-                    'cost' => 12,
-                ];
-                $hashedPassword = password_hash($_POST['passwordUser'], PASSWORD_DEFAULT, $options);
-                $user->setName($_POST['nameUser']);
-                $user->setUsername($_POST['userName']);
-                $user->setEmail($_POST['emailUser']);
-                $user->setPassword($hashedPassword);
-                $user->setLocation_id($location_name['id']);
-                if (isset($_FILES['photoUser']) && $_FILES['photoUser']['error'] === UPLOAD_ERR_OK) {
-                    $uploadDir = __DIR__ . '/images/';
-                    $uploadFile = $uploadDir . basename($_FILES['photoUser']['name']);
+                if ($_POST['passwordUser'] !== $_POST['rpasswordUser']) {
+                    throw new Exception("The passwords do not match.");
+                } else {
+                    $user = new User();
+                    $options = [
+                        'cost' => 12,
+                    ];
+                    $hashedPassword = password_hash($_POST['passwordUser'], PASSWORD_DEFAULT, $options);
+                    $user->setName($_POST['nameUser']);
+                    $user->setUsername($_POST['userName']);
+                    $user->setEmail($_POST['emailUser']);
+                    $user->setPassword($hashedPassword);
+                    $user->setLocation_id($location_name['id']);
+                    if (isset($_FILES['photoUser']) && $_FILES['photoUser']['error'] === UPLOAD_ERR_OK) {
+                        $uploadDir = __DIR__ . '/images/';
+                        $uploadFile = $uploadDir . basename($_FILES['photoUser']['name']);
 
-                    // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
-                    $uniqueFileName = uniqid() . '_' . basename($_FILES['photoUser']['name']);
-                    $uploadFile = $uploadDir . $uniqueFileName;
+                        // Unieke identifier aan de bestandsnaam om conflicten te voorkomen
+                        $uniqueFileName = uniqid() . '_' . basename($_FILES['photoUser']['name']);
+                        $uploadFile = $uploadDir . $uniqueFileName;
 
-                    if (move_uploaded_file($_FILES['photoUser']['tmp_name'], $uploadFile)) {
-                        // Unieke bestandsnaam opgeslagen in de database
-                        $user->setPhoto($uniqueFileName);
-                    } else {
-                        throw new Exception("Failed to move uploaded file.");
+                        if (move_uploaded_file($_FILES['photoUser']['tmp_name'], $uploadFile)) {
+                            // Unieke bestandsnaam opgeslagen in de database
+                            $user->setPhoto($uniqueFileName);
+                        } else {
+                            throw new Exception("Failed to move uploaded file.");
+                        }
                     }
+                    $user->save();
                 }
-                $user->save();
             }
-        }
         } catch (Throwable $ex) {
             $error = $ex->getMessage();
         }
@@ -128,13 +127,13 @@ if (!isset($_SESSION['user'])) {
         try {
             $location = new Location();
             if (isset($_POST['location'])) {
-            $location->setHub_location($_POST['location']);
-            if (isset($_POST['add'])) {
-                $location->addLocation();
-            } elseif (isset($_POST['remove'])) {
-                $location->removeLocation();
+                $location->setHub_location($_POST['location']);
+                if (isset($_POST['add'])) {
+                    $location->addLocation();
+                } elseif (isset($_POST['remove'])) {
+                    $location->removeLocation();
+                }
             }
-        }
         } catch (Throwable $ex) {
             $error = $ex->getMessage();
         }
@@ -238,23 +237,23 @@ if (!isset($_SESSION['user'])) {
         -->
 
         <!-- Divider -->
-           <li class="nav-item">
-                <?php if ($admin == true) { ?>
-                    <a class="nav-link collapsed" href="timeOffManager.php">
-                        <i class='far fa-clock'></i>
-                        <span>Task types</span>
-                    </a>
-                <?php }  ?>
-            </li>
+        <li class="nav-item">
+            <?php if ($admin == true) { ?>
+                <a class="nav-link collapsed" href="timeOffManager.php">
+                    <i class='far fa-clock'></i>
+                    <span>Task types</span>
+                </a>
+            <?php }  ?>
+        </li>
 
-            <li class="nav-item">
-                <?php if ($admin == false && $manager== false) { ?>
-                    <a class="nav-link collapsed" href="userTask.php">
+        <li class="nav-item">
+            <?php if ($admin == false && $manager == false) { ?>
+                <a class="nav-link collapsed" href="userTask.php">
                     <i class="fas fa-tasks"></i>
                     <span>My Task</span>
-                    </a>
-                <?php }  ?>
-            </li>
+                </a>
+            <?php }  ?>
+        </li>
 
     </ul>
     <!-- End of Sidebar -->
@@ -459,27 +458,31 @@ if (!isset($_SESSION['user'])) {
                                 </table>
                             </div>
                         </div>
-                        <div class="col-lg-6 mb-4 px-0">
-                            <div class="card shadow mb-4">
-                                <div class="card-header py-3">
-                                    <h6 class="m-0 font-weight-bold text-primary">Clock In/Out</h6>
-                                </div>
-                                <div class="card-body">
-                                    <form method="post">
-                                        <?php if ($clockedOut) : ?>
-                                            <button type="submit" name="clock_in" class="btn btn-primary btn-block">
-                                                <i class="fas fa-3x fa-clock mb-2"></i><br>Clock In
-                                            </button>
-                                        <?php endif; ?>
-                                        <?php if ($clockedIn) : ?>
-                                            <button type="submit" name="clock_out" class="btn btn-danger btn-block">
-                                                <i class="fas fa-3x fa-coffee mb-2"></i><br>Clock Out
-                                            </button>
-                                        <?php endif; ?>
-                                    </form>
+                        <?php
+                        if ($manager == false && $admin == false) {
+                        ?>
+                            <div class="col-lg-6 mb-4 px-0">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header py-3">
+                                        <h6 class="m-0 font-weight-bold text-primary">Clock In/Out</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <form method="post">
+                                            <?php if ($clockedOut) : ?>
+                                                <button type="submit" name="clock_in" class="btn btn-primary btn-block">
+                                                    <i class="fas fa-3x fa-clock mb-2"></i><br>Clock In
+                                                </button>
+                                            <?php endif; ?>
+                                            <?php if ($clockedIn) : ?>
+                                                <button type="submit" name="clock_out" class="btn btn-danger btn-block">
+                                                    <i class="fas fa-3x fa-coffee mb-2"></i><br>Clock Out
+                                                </button>
+                                            <?php endif; ?>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        <?php } ?>
                         <div class="popup" id="clockPopup">
                             <i class="fas fa-check-circle"></i>
                             <div id="clockPopupText"></div>
