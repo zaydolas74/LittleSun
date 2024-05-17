@@ -141,13 +141,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="hub.php">
                         <i class="fa-brands fa-hubspot"></i>
-                        <span>Manager Hub</span>
+                        <span>Location Hub</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="task.php">
                         <i class="fas fa-tasks"></i>
-                        <span>Asign Task</span>
+                        <span>Assign Task</span>
                     </a>
                 </li>
             <?php endif; ?>

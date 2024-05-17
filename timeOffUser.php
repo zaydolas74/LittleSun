@@ -122,10 +122,10 @@ if (!isset($_SESSION['user'])) {
             <hr class="sidebar-divider">
 
             <li class="nav-item">
-                <?php if ($admin == false && $manager== false) { ?>
+                <?php if ($admin == false && $manager == false) { ?>
                     <a class="nav-link collapsed" href="userTask.php">
-                    <i class="fas fa-tasks"></i>
-                    <span>My Task</span>
+                        <i class="fas fa-tasks"></i>
+                        <span>My Task</span>
                     </a>
                 <?php }  ?>
             </li>
@@ -238,13 +238,13 @@ if (!isset($_SESSION['user'])) {
                 <div class="container-fluid px-5">
                     <div class="">
                         <div class="row flex-wrap justify-content-around">
-                        <div class="card shadow col-md-6 mb-4" >
+                            <div class="card shadow col-md-6 mb-4">
                                 <!-- Card Header - Dropdown -->
                                 <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-dark">Request Time Off</h6>
                                 </div>
                                 <!-- Card Body -->
-                                <div class="card-body" >
+                                <div class="card-body">
                                     <div class="row justify-content-center">
                                         <div class="col-md-11">
                                             <form action="#" method="post">
@@ -308,29 +308,29 @@ if (!isset($_SESSION['user'])) {
                             </div>
 
                             <div class="col-md-4 mb-4">
-                            <div class="card shadow call-sick-card">
-                                <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-dark">Call Sick</h6>
-                                </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <form>
-                                        <div class="form-group">
-                                            <label for="sick-date"><strong>Date</strong></label>
-                                            <input type="date" class="form-control" id="sick-date" name="sick-date">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="sick-reason"><strong>Reason</strong></label>
-                                            <textarea class="form-control" id="sick-reason" name="sick-reason" rows="3"></textarea>
-                                        </div>
-                                        <div class="d-flex justify-content-center">
-                                                        <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block btn-lg text-body" style="font-weight: bold;" value="Request">
-                                                    </div>
-                                    </form>
+                                <div class="card shadow call-sick-card">
+                                    <!-- Card Header - Dropdown -->
+                                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-dark">Call Sick</h6>
+                                    </div>
+                                    <!-- Card Body -->
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="sick-date"><strong>Date</strong></label>
+                                                <input type="date" class="form-control" id="sick-date" name="sick-date">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="sick-reason"><strong>Reason</strong></label>
+                                                <textarea class="form-control" id="sick-reason" name="sick-reason" rows="3"></textarea>
+                                            </div>
+                                            <div class="d-flex justify-content-center">
+                                                <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block btn-lg text-body" style="font-weight: bold;" value="Request">
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
                             <div class="card shadow mb-3" style="width: 100%;">
                                 <!-- Card Header - Dropdown -->
@@ -395,5 +395,9 @@ if (!isset($_SESSION['user'])) {
         <!-- End of Page Wrapper -->
     </div>
 </body>
+<script src="js/script.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </html>

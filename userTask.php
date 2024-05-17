@@ -119,10 +119,10 @@ if (!isset($_SESSION['user'])) {
             <?php endif; ?>
 
             <li class="nav-item">
-                <?php if ($admin == false && $manager== false) { ?>
+                <?php if ($admin == false && $manager == false) { ?>
                     <a class="nav-link collapsed" href="userTask.php">
-                    <i class="fas fa-tasks"></i>
-                    <span>My Task</span>
+                        <i class="fas fa-tasks"></i>
+                        <span>My Task</span>
                     </a>
                 <?php }  ?>
             </li>
@@ -175,7 +175,7 @@ if (!isset($_SESSION['user'])) {
                         </div>
                         <div class="card-body">
                             <h2>Your Tasks</h2>
-                            <?php foreach ($tasks as $task) : 
+                            <?php foreach ($tasks as $task) :
                                 $taskDetails = Task::getTaskById($task['taskId']);
                                 $taskName = $taskDetails['name'];
                                 $taskType = $taskDetails['type'];
@@ -183,13 +183,13 @@ if (!isset($_SESSION['user'])) {
                                 $taskStartTime = $task['start_time'];
                                 $taskEndTime = $task['end_time'];
                             ?>
-                            <div class="task">
-                                <h3><?php echo $taskName ?></h3>
-                                <p>Type: <?php echo $taskType ?></p>
-                                <p>Date: <?php echo $taskDate ?></p>
-                                <p>Start Time: <?php echo $taskStartTime ?></p>
-                                <p>End Time: <?php echo $taskEndTime ?></p>
-                            </div>
+                                <div class="task">
+                                    <h3><?php echo $taskName ?></h3>
+                                    <p>Type: <?php echo $taskType ?></p>
+                                    <p>Date: <?php echo $taskDate ?></p>
+                                    <p>Start Time: <?php echo $taskStartTime ?></p>
+                                    <p>End Time: <?php echo $taskEndTime ?></p>
+                                </div>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -207,5 +207,9 @@ if (!isset($_SESSION['user'])) {
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="js/script.js"></script>
 </body>
+<script src="js/script.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </html>
