@@ -148,7 +148,7 @@ $events = array_map(function ($task) {
             <hr class="sidebar-divider">
 
             <div class="sidebar-heading">
-                Calender
+                Calendar
             </div>
 
             <li class="nav-item">
@@ -168,7 +168,7 @@ $events = array_map(function ($task) {
             <li class="nav-item">
                 <a class="nav-link collapsed" href="calender.php">
                     <i class='far fa-calendar-alt'></i>
-                    <span>Calender</span>
+                    <span>Calendar</span>
                 </a>
             </li>
 

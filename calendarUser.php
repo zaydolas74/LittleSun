@@ -148,7 +148,7 @@ $eventsJson = json_encode($allEvents);
             <hr class="sidebar-divider">
 
             <div class="sidebar-heading">
-                Calender
+                Calendar
             </div>
 
             <li class="nav-item">
@@ -168,7 +168,7 @@ $eventsJson = json_encode($allEvents);
             <li class="nav-item">
                 <a class="nav-link collapsed" href="calender.php">
                     <i class='far fa-calendar-alt'></i>
-                    <span>Calender</span>
+                    <span>Calendar</span>
                 </a>
             </li>
 

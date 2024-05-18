@@ -175,7 +175,7 @@ if (!isset($_SESSION['user'])) {
         <?php if ($admin == false) { ?>
             <hr class="sidebar-divider">
             <div class="sidebar-heading">
-                Calender
+                Calendar
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->

@@ -78,7 +78,7 @@ if (!isset($_SESSION['user'])) {
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Calender
+                Calendar
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -100,7 +100,7 @@ if (!isset($_SESSION['user'])) {
             <li class="nav-item">
                 <a class="nav-link collapsed" href="calender.php">
                     <i class='far fa-calendar-alt'></i>
-                    <span>Calender</span>
+                    <span>Calendar</span>
                 </a>
             </li>
 

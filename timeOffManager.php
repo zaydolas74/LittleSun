@@ -66,7 +66,7 @@ if (!isset($_SESSION['user'])) {
 
             <!-- Heading -->
             <div class="sidebar-heading">
-                Calender
+                Calendar
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
@@ -88,7 +88,7 @@ if (!isset($_SESSION['user'])) {
             <li class="nav-item">
                 <a class="nav-link collapsed" href="calender.php">
                     <i class='far fa-calendar-alt'></i>
-                    <span>Calender</span>
+                    <span>Calendar</span>
                 </a>
             </li>
 
@@ -103,13 +103,13 @@ if (!isset($_SESSION['user'])) {
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="hub.php">
                         <i class="fa-brands fa-hubspot"></i>
-                        <span>Manager Hub</span>
+                        <span>Location Hub</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link collapsed" href="task.php">
                         <i class="fas fa-tasks"></i>
-                        <span>Asign Task</span>
+                        <span>Assign Task</span>
                     </a>
                 </li>
             <?php endif; ?>
