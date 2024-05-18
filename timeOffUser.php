@@ -121,8 +121,8 @@ if (!isset($_SESSION['user'])) {
             <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <li class="nav-item">
-                <?php if ($admin == false && $manager == false) { ?>
+            <?php if ($admin == false && $manager == false) { ?>
+                <li class="nav-item">
                     <div class="sidebar-heading">
                         User Tools
                     </div>
@@ -130,8 +130,8 @@ if (!isset($_SESSION['user'])) {
                         <i class="fas fa-tasks"></i>
                         <span>My Task</span>
                     </a>
-                <?php }  ?>
-            </li>
+                </li>
+            <?php }  ?>
 
 
             <!-- Heading -->
@@ -366,8 +366,10 @@ if (!isset($_SESSION['user'])) {
                                                                 <td><?php
                                                                     if ($timeOff['status'] == 0) {
                                                                         echo 'Pending';
-                                                                    } else {
+                                                                    } else if ($timeOff['status'] == "Approved") {
                                                                         echo 'Approved';
+                                                                    } else if ($timeOff['status'] == "Declined") {
+                                                                        echo 'Declined';
                                                                     }
                                                                     ?></td>
                                                             </tr>

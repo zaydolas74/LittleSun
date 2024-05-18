@@ -172,31 +172,41 @@ if (!isset($_SESSION['user'])) {
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-                    <div class="card shadow mb-4">
+                    <div class="card shadow">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-dark">Welcome, <?php echo $username ?></h6>
+                            <h5 class="m-0 font-weight-bold text-dark">Welkom, <?php echo ucfirst($name) ?></h5>
                         </div>
                         <div class="card-body">
-                            <h2>Your Tasks</h2>
-                            <?php foreach ($tasks as $task) :
-                                $taskDetails = Task::getTaskById($task['taskId']);
-                                $taskName = $taskDetails['name'];
-                                $taskType = $taskDetails['type'];
-                                $taskDate = $task['date'];
-                                $taskStartTime = $task['start_time'];
-                                $taskEndTime = $task['end_time'];
-                            ?>
-                                <div class="task">
-                                    <h3><?php echo $taskName ?></h3>
-                                    <p>Type: <?php echo $taskType ?></p>
-                                    <p>Date: <?php echo $taskDate ?></p>
-                                    <p>Start Time: <?php echo $taskStartTime ?></p>
-                                    <p>End Time: <?php echo $taskEndTime ?></p>
-                                </div>
-                            <?php endforeach; ?>
+                            <h2 class="mb-4">Jouw Taken</h2>
+                            <?php if (count($tasks) > 0) : ?>
+                                <?php $count = 1; ?>
+                                <?php foreach ($tasks as $task) :
+                                    $taskDetails = Task::getTaskById($task['taskId']);
+                                    $taskName = $taskDetails['name'];
+                                    $taskType = $taskDetails['type'];
+                                    $taskDate = $task['date'];
+                                    $taskStartTime = $task['start_time'];
+                                    $taskEndTime = $task['end_time'];
+                                ?>
+                                    <div class="task card mb-4">
+                                        <div class="card-body">
+                                            <h3 class="card-title">Taak <?php echo $count ?></h3>
+                                            <p class="card-text">Type: <?php echo $taskType ?></p>
+                                            <p class="card-text">Datum: <?php echo date("d-m-Y", strtotime($taskDate)) ?></p>
+                                            <p class="card-text">Starttijd: <?php echo date("H:i", strtotime($taskStartTime)) ?></p>
+                                            <p class="card-text">Eindtijd: <?php echo date("H:i", strtotime($taskEndTime)) ?></p>
+                                        </div>
+                                    </div>
+                                    <?php $count++; ?>
+                                <?php endforeach; ?>
+                            <?php else : ?>
+                                <p class="text-muted">Er zijn geen taken op dit moment.</p>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
+
+
                 <!-- End of Main Content -->
             </div>
             <!-- End of Content Wrapper -->
