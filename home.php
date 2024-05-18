@@ -213,31 +213,18 @@ if (!isset($_SESSION['user'])) {
             <li class="nav-item">
                 <a class="nav-link collapsed" href="hub.php">
                     <i class="fa-brands fa-hubspot"></i>
-                    <span>Manager Hub</span>
+                    <span>Location Hub</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link collapsed" href="task.php">
                     <i class="fas fa-tasks"></i>
-                    <span>Asign Task</span>
+                    <span>Assign Task</span>
                 </a>
             </li>
         <?php endif; ?>
 
-        <!-- Nav Item - Charts
-        <li class="nav-item">
-            <a class="nav-link" href="charts.html">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>TEST</span></a>
-        </li>
 
-        Nav Item - Tables 
-        <li class="nav-item">
-            <a class="nav-link" href="tables.html">
-                <i class="fas fa-fw fa-table"></i>
-                <span>TEST</span></a>
-        </li>
-        -->
 
         <!-- Divider -->
         <?php if ($admin == true) { ?>

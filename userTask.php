@@ -48,7 +48,7 @@ if (!isset($_SESSION['user'])) {
         <ul class="navbar-nav bg-dark sidebar sidebar-dark accordion" id="accordionSidebar">
             <!-- Sidebar - Brand -->
             <div class="container justify-content-center" id="sidebar-logo">
-                <a class="navbar-brand py-3 m-0 justify-content-center" href="#">
+                <a class="navbar-brand py-3 m-0 justify-content-center" href="home.php">
                     <img src="images/Little-Sun-Logo.png" alt="" id="big-logo" height="35">
                     <img src="images/Little-Sun-Logo-small.png" id="small-logo" alt="" height="50">
                 </a>
@@ -83,7 +83,7 @@ if (!isset($_SESSION['user'])) {
             </li>
             <!-- Nav Item - Calendar -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="#">
+                <a class="nav-link collapsed" href="calendarUser.php">
                     <i class='far fa-calendar-alt'></i>
                     <span>Calendar</span>
                 </a>
@@ -120,6 +120,9 @@ if (!isset($_SESSION['user'])) {
 
             <li class="nav-item">
                 <?php if ($admin == false && $manager == false) { ?>
+                    <div class="sidebar-heading">
+                        User Tools
+                    </div>
                     <a class="nav-link collapsed" href="userTask.php">
                         <i class="fas fa-tasks"></i>
                         <span>My Task</span>

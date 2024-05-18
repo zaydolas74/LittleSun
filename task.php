@@ -17,6 +17,8 @@ if (!isset($_SESSION['user'])) {
             $location_name = Location::getLocationById($user['location_id']);
             if ($user['type'] == 'Manager') {
                 $manager = true;
+            } else {
+                header('location: home.php');
             }
         }
     endforeach;

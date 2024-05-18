@@ -13,11 +13,9 @@ if (!isset($_SESSION['user'])) {
             $email = $user['email'];
             $name = $user['name'];
             if ($user['type'] == 'Manager') {
-                $manager = true;
+                header('location: calender.php');
             } else if ($user['type'] == 'Admin') {
                 header('location: home.php');
-            } else {
-                header('location: calendarUser.php');
             }
         }
     endforeach;

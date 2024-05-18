@@ -207,35 +207,42 @@ if (!isset($_SESSION['user'])) {
 
                 <!-- Begin Page Content -->
                 <div class="container-fluid">
-
-                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                        <h1 class="h3 mb-0 text-gray-800"><?php echo $location_name['location_name']; ?> - Hub</h1>
-                    </div>
-                    <div class="col-xl-4 col-lg px-0">
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-dark">List of Users</h6>
-                            </div>
-                            <div class="card-body">
-                                <?php foreach ($users as $user) : ?>
-                                    <?php if ($user['type'] == 'User') : ?>
-                                        <div class="d-flex align-items-center justify-content-between mb-3">
-                                            <div class="profile-photo-placeholder mr-3">
-                                                <img src="images/<?php echo $user['profile_picture']; ?>" alt="foto">
+                    <h1 class="h3 mb-4 text-gray-800"><?php echo $location_name['location_name']; ?> - Hub</h1>
+                    <div class="row">
+                        <?php foreach ($users as $user) : ?>
+                            <?php if ($user['type'] == 'User') : ?>
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card shadow">
+                                        <div class="card-body">
+                                            <div class="d-flex align-items-center mb-3">
+                                                <img src="images/<?php echo $user['profile_picture']; ?>" class="rounded-circle mr-3" style="width: 60px; height: 60px; object-fit: cover;" alt="foto">
+                                                <div>
+                                                    <h5 class="card-title mb-1"><?php echo $user['username']; ?></h5>
+                                                    <p class="card-text text-muted mb-0"><?php echo $user['name']; ?></p>
+                                                    <p class="card-text text-muted"><?php echo $user['email']; ?></p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 class="medium font-weight-regular"><?php echo $user['username']; ?></h4>
-                                                <?php $task = Task::getTaskById($user['task_id']); ?>
-                                                <span class="float-right">Taak: <?php echo $task['type']; ?></span>
-                                            </div>
+                                            <hr>
+                                            <h6 class="font-weight-bold mb-3">Taken:</h6>
+                                            <ul class="list-unstyled">
+                                                <?php $userTasks = Task::getAllUserTasksById($user['id']); ?>
+                                                <?php foreach ($userTasks as $userTask) : ?>
+                                                    <?php $task = Task::getTaskById($userTask['taskId']); ?>
+                                                    <li><?php echo $task['type']; ?></li>
+                                                <?php endforeach; ?>
+                                            </ul>
                                         </div>
-                                    <?php endif; ?>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
                     </div>
                 </div>
+
+
+
+
+
                 <!-- End of Main Content -->
 
 
