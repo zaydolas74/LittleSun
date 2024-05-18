@@ -1,6 +1,7 @@
 <?php
 include_once(__DIR__ . '/classes/Task.php');
 include_once(__DIR__ . '/classes/User.php');
+include_once(__DIR__ . '/classes/Sick.php');
 
 session_start();
 if (!isset($_SESSION['user'])) {
@@ -17,25 +18,49 @@ if (!isset($_SESSION['user'])) {
             } else if ($user['type'] == 'Admin') {
                 header('location: home.php');
             }
+            $tasks = Task::getTaskByUserId($user['id']); // Set $tasks variable
+            $sickDays = Sick::getOneData($user['id']); // Set $sickDays variable
         }
     endforeach;
 }
-$tasks = Task::getAllUserTasksWithTaskName();
 
-// Format the events with start and end times
-$events = array_map(function ($task) {
-    // Combine date and time to create ISO 8601 datetime format
+
+$allEvents = [];
+
+// Add task events to the array
+foreach ($tasks as $task) {
     $start = $task['date'] . 'T' . $task['start_time'] . ':00';
     $end = $task['date'] . 'T' . $task['end_time'] . ':00';
-
-    // Create the event object with task name
-    return [
+    $allEvents[] = [
         'id' => $task['id'],
         'title' => $task['task_type'],
         'start' => $start,
         'end' => $end
     ];
-}, $tasks);
+}
+
+// Add sick day events to the array
+if ($sickDays) {
+    foreach ($sickDays as $sickDay) {
+        // Format start and end dates
+        $startDate = date('Y-m-d', strtotime($sickDay['start_date']));
+        $endDate = date('Y-m-d', strtotime($sickDay['end_date']) + 86400);
+        $allEvents[] = [
+            'id' => $sickDay['id'],
+            'title' => 'Sick Day',
+            'start' => $startDate,
+            'end' => $endDate,
+            'display' => 'background',
+            'color' => 'red'
+        ];
+    }
+}
+
+// Encode all events as JSON
+$eventsJson = json_encode($allEvents);
+
+
+
 ?>
 
 <!DOCTYPE html>
@@ -59,11 +84,13 @@ $events = array_map(function ($task) {
                     }
                 },
                 initialView: 'dayGridMonth',
-                events: <?php echo json_encode($events); ?>,
+                events: <?php echo $eventsJson; ?>,
+
+
                 headerToolbar: {
                     start: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
                     center: 'title',
-                    end: 'assignTaskButton,prevYear,prev,next,nextYear'
+                    end: 'prevYear,prev,next,nextYear'
                 },
                 eventTimeFormat: {
                     hour: '2-digit',
@@ -75,26 +102,10 @@ $events = array_map(function ($task) {
                     listWeek: {
                         eventContent: function(arg) {
                             let deleteBtn = document.createElement('button');
-                            deleteBtn.innerText = 'Delete';
+                            deleteBtn.innerText = 'Call Sick';
                             deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm', 'ml-2');
                             deleteBtn.addEventListener('click', function() {
-                                if (confirm('Are you sure you want to delete this event?')) {
-                                    let taskId = arg.event.id;
-                                    $.ajax({
-                                        url: 'delete_task.php',
-                                        method: 'POST',
-                                        data: {
-                                            taskId: taskId
-                                        },
-                                        success: function(response) {
-                                            arg.event.remove(); // Verwijder het event uit de kalender
-                                        },
-                                        error: function(xhr, status, error) {
-                                            console.error(xhr.responseText);
-                                            alert('Er is een fout opgetreden bij het verwijderen van de taak.');
-                                        }
-                                    });
-                                }
+                                window.location.href = 'timeOffUser.php';
                             });
 
                             let title = document.createElement('div');
@@ -180,6 +191,18 @@ $events = array_map(function ($task) {
                     </a>
                 </li>
             <?php endif; ?>
+
+            <?php if ($admin == false && $manager == false) { ?>
+                <li class="nav-item">
+                    <div class="sidebar-heading">
+                        User Tools
+                    </div>
+                    <a class="nav-link collapsed" href="userTask.php">
+                        <i class="fas fa-tasks"></i>
+                        <span>My Task</span>
+                    </a>
+                </li>
+            <?php }  ?>
         </ul>
 
         <div id="content-wrapper" class="d-flex flex-column">

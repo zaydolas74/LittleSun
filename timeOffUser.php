@@ -3,6 +3,7 @@ include_once(__DIR__ . '/classes/User.php');
 include_once(__DIR__ . '/classes/Location.php');
 include_once(__DIR__ . '/classes/Task.php');
 include_once(__DIR__ . '/classes/TimeOff.php');
+include_once(__DIR__ . '/classes/Sick.php');
 session_start();
 if (!isset($_SESSION['user'])) {
     header('location: index.php');
@@ -20,7 +21,7 @@ if (!isset($_SESSION['user'])) {
             }
 
             // Time off request
-            if (!empty($_POST)) {
+            if (!empty($_POST['start']) && !empty($_POST['end']) && !empty($_POST['reason']) && !empty($_POST['day'])) {
                 try {
                     $timeOff = new TimeOff();
                     $timeOff->setUserId($user['id']);
@@ -29,6 +30,17 @@ if (!isset($_SESSION['user'])) {
                     $timeOff->setReason($_POST['reason']);
                     $timeOff->setDay_Type($_POST['day']);
                     $timeOff->save();
+                } catch (\Throwable $th) {
+                    echo $th->getMessage();
+                }
+            }
+            if (!empty($_POST['start-date']) && !empty($_POST['end-date'])) {
+                try {
+                    $sick = new Sick();
+                    $sick->setUserId($user['id']);
+                    $sick->setStartDate($_POST['start-date']);
+                    $sick->setEndDate($_POST['end-date']);
+                    $sick->save();
                 } catch (\Throwable $th) {
                     echo $th->getMessage();
                 }
@@ -238,19 +250,19 @@ if (!isset($_SESSION['user'])) {
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid px-5">
+                <div class="container-fluid ">
                     <div class="">
                         <div class="row flex-wrap justify-content-around">
-                            <div class="card shadow col-md-6 mb-4">
+                            <div class="card shadow  mb-4">
                                 <!-- Card Header - Dropdown -->
-                                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <div class="card-header d-flex flex-row align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-dark">Request Time Off</h6>
                                 </div>
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <div class="row justify-content-center">
                                         <div class="col-md-11">
-                                            <form action="#" method="post">
+                                            <form action="" method="post">
                                                 <div class="form-group">
                                                     <label for="Day"><strong>Day</strong> </label>
                                                     <div class="row justify-content-around mb-3">
@@ -307,10 +319,9 @@ if (!isset($_SESSION['user'])) {
 
                                     </div>
                                 </div>
-
                             </div>
 
-                            <div class="col-md-4 mb-4">
+                            <div class="col-lg-4 col-md-6 mb-4">
                                 <div class="card shadow call-sick-card">
                                     <!-- Card Header - Dropdown -->
                                     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -318,24 +329,25 @@ if (!isset($_SESSION['user'])) {
                                     </div>
                                     <!-- Card Body -->
                                     <div class="card-body">
-                                        <form>
+                                        <form method="post" action="">
                                             <div class="form-group">
-                                                <label for="sick-date"><strong>Date</strong></label>
-                                                <input type="date" class="form-control" id="sick-date" name="sick-date">
+                                                <label for="start-date"><strong>Start Date</strong></label>
+                                                <input type="date" class="form-control" id="start-date" name="start-date">
                                             </div>
                                             <div class="form-group">
-                                                <label for="sick-reason"><strong>Reason</strong></label>
-                                                <textarea class="form-control" id="sick-reason" name="sick-reason" rows="3"></textarea>
+                                                <label for="end-date"><strong>End Date</strong></label>
+                                                <input type="date" class="form-control" id="end-date" name="end-date">
                                             </div>
-                                            <div class="d-flex justify-content-center">
-                                                <input type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-block btn-lg text-body" style="font-weight: bold;" value="Request">
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary btn-block">Request</button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="card shadow mb-3" style="width: 100%;">
+
+                            <div class="card shadow mb-3 mx-md-5" style="width: 95%;">
                                 <!-- Card Header - Dropdown -->
                                 <div class="card-header py-3 d-flex flex-row  align-items-center justify-content-between">
                                     <h6 class="m-0 font-weight-bold text-dark">Time Off Requests</h6>
@@ -344,7 +356,7 @@ if (!isset($_SESSION['user'])) {
                                 <div class="card-body">
                                     <div class="pt-4 pb-2">
                                         <div class="row justify-content-center">
-                                            <div class="col-md-11" style="width: 60vw;">
+                                            <div class="col-md-11">
                                                 <table class="table">
                                                     <thead>
                                                         <tr>
@@ -363,15 +375,17 @@ if (!isset($_SESSION['user'])) {
                                                                 <td><?php echo $timeOff['start_time']; ?></td>
                                                                 <td><?php echo $timeOff['end_time']; ?></td>
                                                                 <td><?php echo $timeOff['reason']; ?></td>
-                                                                <td><?php
-                                                                    if ($timeOff['status'] == 0) {
-                                                                        echo 'Pending';
-                                                                    } else if ($timeOff['status'] == "Approved") {
-                                                                        echo 'Approved';
-                                                                    } else if ($timeOff['status'] == "Declined") {
-                                                                        echo 'Declined';
-                                                                    }
-                                                                    ?></td>
+                                                                <td> <?php
+                                                                        if ($timeOff['status'] == 0) {
+                                                                            echo '<span style="color: orange; background-color: #fff3e0; border: 1px solid orange; padding: 5px; border-radius: 3px;">Pending</span>';
+                                                                        } elseif ($timeOff['status'] == 'Accepted') {
+                                                                            echo '<span style="color: green; background-color: #e0f7fa; border: 1px solid green; padding: 5px; border-radius: 3px;">Accepted</span>';
+                                                                        } elseif ($timeOff['status'] == 'Declined') {
+                                                                            echo '<span style="color: red; background-color: #ffebee; border: 1px solid red; padding: 5px; border-radius: 3px;">Declined</span>';
+                                                                        } else {
+                                                                            echo $timeOff['status'];
+                                                                        }
+                                                                        ?></td>
                                                             </tr>
                                                         <?php
 

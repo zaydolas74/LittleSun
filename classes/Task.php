@@ -104,6 +104,17 @@ class Task
         return $result;
     }
 
+    public static function getTaskByUserId($userId)
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT user_task.*, task.type AS task_type FROM user_task INNER JOIN task ON user_task.taskId = task.id WHERE userId = :userId";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':userId', $userId);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
     public static function deleteUserTask($id)
     {
         $conn = Db::getConnection();
@@ -120,6 +131,17 @@ class Task
     {
         $conn = Db::getConnection();
         $sql = "SELECT user_task.*, task.type AS task_type FROM user_task INNER JOIN task ON user_task.taskId = task.id";
+        $statement = $conn->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    //2 inner joins with info of user and task with profile picture
+    public static function getAllUserTasksWithTaskNameAndUserInfo()
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT user_task.*, task.type AS task_type, user.name AS user_name, user.profile_picture AS user_profile_picture FROM user_task INNER JOIN task ON user_task.taskId = task.id INNER JOIN user ON user_task.userId = user.id";
         $statement = $conn->prepare($sql);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);

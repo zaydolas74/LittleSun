@@ -22,7 +22,7 @@ if (!isset($_SESSION['user'])) {
         }
     endforeach;
 }
-$tasks = Task::getAllUserTasksWithTaskName();
+$tasks = Task::getAllUserTasksWithTaskNameAndUserInfo();
 
 // Format the events with start and end times
 $events = array_map(function ($task) {
@@ -30,14 +30,23 @@ $events = array_map(function ($task) {
     $start = $task['date'] . 'T' . $task['start_time'] . ':00';
     $end = $task['date'] . 'T' . $task['end_time'] . ':00';
 
-    // Create the event object with task name
+    // Create the event title with task type and user info
+    $title = $task['task_type'];
+    if (isset($task['user_name'])) {
+        // If user name exists, include it in the title
+        $userName = htmlspecialchars($task['user_name']); // Escape user name
+        $title .= ' ' . ucfirst($userName);
+    }
+
+    // Create the event object with task name and user info
     return [
         'id' => $task['id'],
-        'title' => $task['task_type'],
+        'title' => $title,
         'start' => $start,
         'end' => $end
     ];
 }, $tasks);
+
 ?>
 
 <!DOCTYPE html>
