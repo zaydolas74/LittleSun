@@ -201,56 +201,94 @@ if (!isset($_SESSION['user'])) {
                             <h6 class="m-0 font-weight-bold text-dark">Time Off Requests</h6>
                         </div>
                         <div class="card-body">
-
                             <form action="" method="get">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Start Date</th>
-                                            <th scope="col">End Date</th>
-                                            <th scope="col">Reason</th>
-                                            <th scope="col">Day Type</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Action</th>
+                                <?php
+                                $timeOffs = TimeOff::getAllTimeOffRequestsAllUsers();
+                                foreach ($timeOffs as $timeOff) :
+                                    $name = User::getUserById($timeOff['userId']);
+                                    $name = $name['name'];
+                                ?>
+                                    <div class="d-block d-md-none mb-3">
+                                        <div class="p-3 border rounded bg-light">
+                                            <p><strong>Name: </strong><?php echo ucfirst($name) ?></p>
+                                            <p><strong>Start Date: </strong><?php echo $timeOff['start_time']; ?></p>
+                                            <p><strong>End Date: </strong><?php echo $timeOff['end_time']; ?></p>
+                                            <p><strong>Reason: </strong><?php echo ucfirst($timeOff['reason']); ?></p>
+                                            <p><strong>Day Type: </strong><?php echo $timeOff['day_type']; ?></p>
+                                            <p><strong>Status: </strong>
+                                                <?php
+                                                if ($timeOff['status'] == 0) {
+                                                    echo '<span style="color: orange; background-color: #fff3e0; border: 1px solid orange; padding: 5px; border-radius: 3px;">Pending</span>';
+                                                } elseif ($timeOff['status'] == 'Accepted') {
+                                                    echo '<span style="color: green; background-color: #e0f7fa; border: 1px solid green; padding: 5px; border-radius: 3px;">Accepted</span>';
+                                                } elseif ($timeOff['status'] == 'Declined') {
+                                                    echo '<span style="color: red; background-color: #ffebee; border: 1px solid red; padding: 5px; border-radius: 3px;">Declined</span>';
+                                                } else {
+                                                    echo $timeOff['status'];
+                                                }
+                                                ?>
+                                            </p>
+                                            <div class="d-flex justify-content-between">
+                                                <a href="acceptTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-success btn-sm">Approve</a>
+                                                <a href="rejectTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-danger btn-sm">Reject</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
 
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php
-                                        $timeOffs = TimeOff::getAllTimeOffRequestsAllUsers();
-
-                                        foreach ($timeOffs as $timeOff) :
-                                            $name = User::getUserById($timeOff['userId']);
-                                            $name = $name['name'];
-                                        ?>
+                                <div class="table-responsive d-none d-md-block">
+                                    <table class="table table-striped">
+                                        <thead class="thead-dark">
                                             <tr>
-                                                <td><?php echo ucfirst($name) ?></td>
-                                                <td><?php echo $timeOff['start_time']; ?></td>
-                                                <td><?php echo $timeOff['end_time']; ?></td>
-                                                <td><?php echo ucfirst($timeOff['reason']); ?></td>
-                                                <td><?php echo $timeOff['day_type']; ?></td>
-                                                <td><?php
-                                                    if ($timeOff['status'] == 0) {
-                                                        echo 'Pending';
-                                                    } else {
-                                                        echo $timeOff['status'];
-                                                    }
-                                                    ?></td>
-                                                <td>
-                                                    <a href="acceptTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-success">Approve</a>
-                                                    <a href="rejectTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-danger">Reject</a>
-                                                </td>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Start Date</th>
+                                                <th scope="col">End Date</th>
+                                                <th scope="col">Reason</th>
+                                                <th scope="col">Day Type</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Action</th>
                                             </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($timeOffs as $timeOff) :
+                                                $name = User::getUserById($timeOff['userId']);
+                                                $name = $name['name'];
+                                            ?>
+                                                <tr>
+                                                    <td class="align-middle"><?php echo ucfirst($name) ?></td>
+                                                    <td class="align-middle"><?php echo $timeOff['start_time']; ?></td>
+                                                    <td class="align-middle"><?php echo $timeOff['end_time']; ?></td>
+                                                    <td class="align-middle"><?php echo ucfirst($timeOff['reason']); ?></td>
+                                                    <td class="align-middle"><?php echo $timeOff['day_type']; ?></td>
+                                                    <td><?php
+                                                        if ($timeOff['status'] == 0) {
+                                                            echo '<span style="color: orange; background-color: #fff3e0; border: 1px solid orange; padding: 5px; border-radius: 3px;">Pending</span>';
+                                                        } elseif ($timeOff['status'] == 'Accepted') {
+                                                            echo '<span style="color: green; background-color: #e0f7fa; border: 1px solid green; padding: 5px; border-radius: 3px;">Accepted</span>';
+                                                        } elseif ($timeOff['status'] == 'Declined') {
+                                                            echo '<span style="color: red; background-color: #ffebee; border: 1px solid red; padding: 5px; border-radius: 3px;">Declined</span>';
+                                                        } else {
+                                                            echo $timeOff['status'];
+                                                        }
+                                                        ?></td>
 
-                                </table>
+                                                    <td class="align-middle">
+                                                        <a href="acceptTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-success btn-sm">Approve</a>
+                                                        <a href="rejectTimeOff.php?id=<?php echo $timeOff['id']; ?>" class="btn btn-danger btn-sm">Reject</a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </form>
                         </div>
-
                     </div>
                 </div>
+
+
+
+
                 <!-- End of Main Content -->
 
 

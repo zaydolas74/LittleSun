@@ -1,15 +1,11 @@
-
 <?php
+include_once(__DIR__ . '/classes/Task.php');
 
-include_once(__DIR__ . '/Task.php');
-
-    if (isset($_GET['id'])) {
-        $task= new Task();
-        $task->deleteTask($_GET['id']);
-        header('Location: taskTypes.php');
-        exit();
-    } 
-    else {
-        echo "Task ID is not set.";
-    }
-
+if (isset($_GET['id'])) {
+    $taskId = $_GET['id'];
+    Task::deleteTask($taskId);
+    header('Location: taskTypes.php');
+    exit();
+} else {
+    echo 'Taak-ID niet opgegeven';
+}

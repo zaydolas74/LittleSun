@@ -36,8 +36,6 @@ $events = array_map(function ($task) {
 }, $tasks);
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang='en'>
 
@@ -45,10 +43,14 @@ $events = array_map(function ($task) {
     <meta charset='utf-8' />
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css' rel='stylesheet' />
+    <link href='css/calender.css' rel='stylesheet' />
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
+                eventClick: function(info) {
+                    alert('Event: ' + info.event.id);
+                },
                 initialView: 'dayGridMonth',
                 events: <?php echo json_encode($events); ?>,
                 headerToolbar: {
@@ -56,12 +58,36 @@ $events = array_map(function ($task) {
                     center: 'title',
                     end: 'prevYear,prev,next,nextYear'
                 },
-                eventTimeFormat: { // Hier voegen we de configuratie toe om de notatie van de tijden aan te passen
+                eventTimeFormat: {
                     hour: '2-digit',
                     minute: '2-digit',
                     omitZeroMinute: false,
-                    meridiem: true // Hier zetten we meridiem (AM/PM) uit
+                    meridiem: true
                 },
+                views: {
+                    listWeek: {
+                        eventContent: function(arg) {
+                            let deleteBtn = document.createElement('button');
+                            deleteBtn.innerText = 'Delete';
+                            deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm', 'ml-2');
+                            deleteBtn.addEventListener('click', function() {
+                                if (confirm('Are you sure you want to delete this event?')) {
+
+
+                                }
+                            });
+
+                            let title = document.createElement('div');
+                            title.innerHTML = arg.event.title;
+
+                            let arrayOfDomNodes = [title, deleteBtn];
+
+                            return {
+                                domNodes: arrayOfDomNodes
+                            };
+                        }
+                    }
+                }
             });
             calendar.render();
         });
@@ -71,13 +97,8 @@ $events = array_map(function ($task) {
 <body>
     <?php include_once 'bootstrap.php'; ?>
 
-    <!-- Page Wrapper -->
     <div id="wrapper">
-
-        <!-- Sidebar -->
         <ul class="navbar-nav bg-dark sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
             <div class="container justify-content-center" id="sidebar-logo">
                 <a class="navbar-brand py-3 m-0 justify-content-center" href="#">
                     <img src="images/Little-Sun-Logo.png" alt="" id="big-logo" height="35">
@@ -85,25 +106,20 @@ $events = array_map(function ($task) {
                 </a>
             </div>
 
-            <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
-            <!-- Nav Item - Dashboard -->
             <li class="nav-item active">
                 <a class="nav-link" href="home.php">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
 
-            <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <!-- Heading -->
             <div class="sidebar-heading">
                 Calender
             </div>
 
-            <!-- Nav Item - Pages Collapse Menu -->
             <li class="nav-item">
                 <?php if ($manager == true) { ?>
                     <a class="nav-link collapsed" href="timeOffManager.php">
@@ -118,7 +134,6 @@ $events = array_map(function ($task) {
                 <?php } ?>
             </li>
 
-            <!-- Nav Item - Utilities Collapse Menu -->
             <li class="nav-item">
                 <a class="nav-link collapsed" href="calender.php">
                     <i class='far fa-calendar-alt'></i>
@@ -126,10 +141,8 @@ $events = array_map(function ($task) {
                 </a>
             </li>
 
-            <!-- Divider -->
             <hr class="sidebar-divider">
 
-            <!-- Heading -->
             <?php if ($manager == true) : ?>
                 <div class="sidebar-heading">
                     Manager Tools
@@ -147,51 +160,12 @@ $events = array_map(function ($task) {
                     </a>
                 </li>
             <?php endif; ?>
-            <!-- Nav Item - Charts
-        <li class="nav-item">
-            <a class="nav-link" href="charts.html">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>TEST</span></a>
-        </li>
-
-        Nav Item - Tables 
-        <li class="nav-item">
-            <a class="nav-link" href="tables.html">
-                <i class="fas fa-fw fa-table"></i>
-                <span>TEST</span></a>
-        </li>
-        -->
-
-
-
         </ul>
-        <!-- End of Sidebar -->
 
-        <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
             <div id="content">
-
-                <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-
-                    <!-- Topbar Search 
-                <form class=" d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                    <div class="input-group">
-                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                -->
-                    <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
-                        <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img class="img-profile rounded-circle mx-2" src="images/<?php echo $user['profile_picture']; ?>">
@@ -214,26 +188,18 @@ $events = array_map(function ($task) {
                                     </span>
                                 </div>
                                 <i class="fa-solid fa-angle-down"></i>
-
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                 <a class="dropdown-item" href="#">TEST</a>
                                 <a class="dropdown-item" href="logout.php">Logout</a>
                             </div>
                         </li>
-
                     </ul>
-
                 </nav>
                 <div id='calendar' class="container">
                 </div>
-
-
             </div>
-            <!-- End of Content Wrapper -->
-
         </div>
-        <!-- End of Page Wrapper -->
     </div>
 </body>
 <script src="js/script.js"></script>

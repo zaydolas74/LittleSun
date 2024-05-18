@@ -20,12 +20,13 @@ if (!isset($_SESSION['user'])) {
             $location_name = Location::getLocationById($user['location_id']);
             if ($user['type'] == 'Admin') {
                 $admin = true;
-            }
-            if ($user['type'] == 'Manager') {
-                $manager = true;
+            } else {
+                header('Location: home.php');
             }
         }
     endforeach;
+
+    $task = Task::getAllTasks();
 }
 
 ?>
@@ -40,7 +41,7 @@ if (!isset($_SESSION['user'])) {
 
         <!-- Sidebar - Brand -->
         <div class="container justify-content-center" id="sidebar-logo">
-            <a class="navbar-brand py-3 m-0 justify-content-center" href="#">
+            <a class="navbar-brand py-3 m-0 justify-content-center" href="home.php">
                 <img src="images/Little-Sun-Logo.png" alt="" id="big-logo" height="35">
                 <img src="images/Little-Sun-Logo-small.png" id="small-logo" alt="" height="50">
             </a>
@@ -58,35 +59,37 @@ if (!isset($_SESSION['user'])) {
         </li>
 
         <!-- Divider -->
-        <hr class="sidebar-divider">
+        <?php if ($admin == false) { ?>
+            <hr class="sidebar-divider">
 
-        <!-- Heading -->
-        <div class="sidebar-heading">
-            Calender
-        </div>
+            <!-- Heading -->
+            <div class="sidebar-heading">
+                Calender
+            </div>
 
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <?php if ($manager == true) { ?>
-                <a class="nav-link collapsed" href="timeOffManager.php">
-                    <i class='far fa-clock'></i>
-                    <span>Time Off</span>
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <?php if ($manager == true) { ?>
+                    <a class="nav-link collapsed" href="timeOffManager.php">
+                        <i class='far fa-clock'></i>
+                        <span>Time Off</span>
+                    </a>
+                <?php } else { ?>
+                    <a class="nav-link collapsed" href="timeOffUser.php">
+                        <i class='far fa-clock'></i>
+                        <span>Time Off</span>
+                    </a>
+                <?php } ?>
+            </li>
+
+            <!-- Nav Item - Utilities Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="calender.php">
+                    <i class='far fa-calendar-alt'></i>
+                    <span>Calendar</span>
                 </a>
-            <?php } else { ?>
-                <a class="nav-link collapsed" href="timeOffUser.php">
-                    <i class='far fa-clock'></i>
-                    <span>Time Off</span>
-                </a>
-            <?php } ?>
-        </li>
-
-        <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="calender.php">
-                <i class='far fa-calendar-alt'></i>
-                <span>Calendar</span>
-            </a>
-        </li>
+            </li>
+        <?php } ?>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -96,7 +99,7 @@ if (!isset($_SESSION['user'])) {
         </div>
         <li class="nav-item">
             <?php if ($admin == true) { ?>
-                <a class="nav-link collapsed" href=".php">
+                <a class="nav-link collapsed" href="taskTypes.php">
                     <i class='far fa-clock'></i>
                     <span>Task types</span>
                 </a>
@@ -223,7 +226,7 @@ if (!isset($_SESSION['user'])) {
                                         <th scope='col'>Delete</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="taskTableBody">
                                     <?php
                                     foreach ($task as $task) {
                                         echo "<tr>";
@@ -241,7 +244,7 @@ if (!isset($_SESSION['user'])) {
                     </div>
                     <div class='row'>
                         <div class='col-12'>
-                            <a href='addTask.php' class='btn btn-primary'>Add Task</a>
+                            <button id="addTaskButton" class='btn btn-primary'>Add Task</button>
                         </div>
                     </div>
                 </div>
@@ -264,37 +267,101 @@ if (!isset($_SESSION['user'])) {
             button.addEventListener('click', function() {
                 var taskId = this.getAttribute('data-id');
                 var taskTypeElement = document.querySelector(`.task-type[data-id='${taskId}']`);
-                var taskType = taskTypeElement.textContent;
+                var taskType = taskTypeElement.textContent.trim();
 
-                taskTypeElement.innerHTML = `<input type='text' value='${taskType}' class='edit-input' />`;
+                taskTypeElement.innerHTML = `<input type='text' value='${taskType}' class='edit-input form-control' />`;
 
                 this.style.display = 'none';
-                document.querySelector(`.btn-save[data-id='${taskId}']`).style.display = 'inline';
+                document.querySelector(`.btn-save[data-id='${taskId}']`).style.display = 'inline-block';
             });
         });
 
         document.querySelectorAll('.btn-save').forEach(button => {
             button.addEventListener('click', function() {
                 var taskId = this.getAttribute('data-id');
-                var taskTypeElement = document.querySelector(`.task-type[data-id='${taskId}']`);
-                var newTaskType = taskTypeElement.querySelector('.edit-input').value;
+                var newType = document.querySelector(`.task-type[data-id='${taskId}'] input`).value;
 
-                // AJAX request to update task type
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'updateTask.php', true);
+                xhr.open('POST', 'editTask.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4 && xhr.status === 200) {
-                        taskTypeElement.textContent = newTaskType;
-                        button.style.display = 'none';
-                        document.querySelector(`.btn-edit[data-id='${taskId}']`).style.display = 'inline';
+                        document.querySelector(`.task-type[data-id='${taskId}']`).innerHTML = newType;
+                        document.querySelector(`.btn-edit[data-id='${taskId}']`).style.display = 'inline-block';
+                        document.querySelector(`.btn-save[data-id='${taskId}']`).style.display = 'none';
+                    } else if (xhr.readyState === 4) {
+                        alert('Error saving task');
                     }
                 };
-                xhr.send(`id=${taskId}&type=${encodeURIComponent(newTaskType)}`);
+                xhr.send('id=' + taskId + '&type=' + encodeURIComponent(newType));
             });
+        });
+
+    });
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // Functie om de "Add Task" knop te verbergen
+        function hideAddTaskButton() {
+            document.getElementById('addTaskButton').style.display = 'none';
+        }
+
+        // Functie om de "Add Task" knop weer te tonen
+        function showAddTaskButton() {
+            document.getElementById('addTaskButton').style.display = 'inline-block';
+        }
+
+        // Event listener voor klikken op "Add Task" knop
+        document.getElementById('addTaskButton').addEventListener('click', function() {
+            hideAddTaskButton(); // Verberg de knop wanneer erop wordt geklikt
+
+            // Maak een nieuwe rij aan voor het toevoegen van een taak
+            var newRow = document.createElement('tr');
+            newRow.innerHTML = `
+            <td></td>
+            <td><input type='text' class='form-control' id='newTaskInput'></td>
+            <td></td>
+            <td class='btn btn-save-new'><button class='btn btn-save-new'><i class='fas fa-save btn-save-new'></i></button></td>
+            <td></td>
+        `;
+            document.getElementById('taskTableBody').appendChild(newRow);
+        });
+
+        // Event listener voor klikken op "Save" knop van nieuwe taak
+        document.getElementById('taskTableBody').addEventListener('click', function(event) {
+            if (event.target.classList.contains('btn-save-new')) {
+                // Voer AJAX-verzoek uit om nieuwe taak toe te voegen
+                var newTaskInput = document.getElementById('newTaskInput').value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'addTask.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // Verwijder de nieuwe rij uit de tabel na succesvolle toevoeging
+                        event.target.closest('tr').remove();
+                        showAddTaskButton(); // Toon de "Add Task" knop weer
+                        location.reload(); // Vernieuw de pagina om de toegevoegde taak weer te geven
+                    } else if (xhr.readyState === 4) {
+                        alert('Er is een fout opgetreden bij het toevoegen van de taak.');
+                    }
+                };
+                xhr.send('task=' + encodeURIComponent(newTaskInput));
+            }
+        });
+
+        // Event listener voor klikken op de pagina om toevoeging van taak te annuleren
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('#taskTableBody') && event.target.id !== 'addTaskButton') {
+                // Controleer of er buiten de tabel en de "Add Task" knop is geklikt
+                showAddTaskButton(); // Toon de "Add Task" knop weer
+                // Verwijder de nieuwe rij als deze nog niet is toegevoegd aan de tabel
+                if (document.getElementById('newTaskInput')) {
+                    document.getElementById('newTaskInput').closest('tr').remove();
+                }
+            }
         });
     });
 </script>
+
 
 
 <script src="js/script.js"></script>

@@ -169,35 +169,38 @@ if (!isset($_SESSION['user'])) {
         </li>
 
         <!-- Divider -->
-        <hr class="sidebar-divider">
+
 
         <!-- Heading -->
-        <div class="sidebar-heading">
-            Calender
-        </div>
+        <?php if ($admin == false) { ?>
+            <hr class="sidebar-divider">
+            <div class="sidebar-heading">
+                Calender
+            </div>
 
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <?php if ($manager == true) { ?>
-                <a class="nav-link collapsed" href="timeOffManager.php">
-                    <i class='far fa-clock'></i>
-                    <span>Time Off</span>
-                </a>
-            <?php } else { ?>
-                <a class="nav-link collapsed" href="timeOffUser.php">
-                    <i class='far fa-clock'></i>
-                    <span>Time Off</span>
-                </a>
-            <?php } ?>
-        </li>
+            <!-- Nav Item - Pages Collapse Menu -->
+            <li class="nav-item">
+                <?php if ($manager == true) { ?>
+                    <a class="nav-link collapsed" href="timeOffManager.php">
+                        <i class='far fa-clock'></i>
+                        <span>Time Off</span>
+                    </a>
+                <?php } else { ?>
+                    <a class="nav-link collapsed" href="timeOffUser.php">
+                        <i class='far fa-clock'></i>
+                        <span>Time Off</span>
+                    </a>
+                <?php } ?>
+            </li>
 
-        <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="calender.php">
-                <i class='far fa-calendar-alt'></i>
-                <span>Calendar</span>
-            </a>
-        </li>
+            <!-- Nav Item - Utilities Collapse Menu -->
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="calender.php">
+                    <i class='far fa-calendar-alt'></i>
+                    <span>Calendar</span>
+                </a>
+            </li>
+        <?php } ?>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
@@ -237,23 +240,29 @@ if (!isset($_SESSION['user'])) {
         -->
 
         <!-- Divider -->
-        <li class="nav-item">
-            <?php if ($admin == true) { ?>
-                <a class="nav-link collapsed" href="timeOffManager.php">
+        <?php if ($admin == true) { ?>
+            <div class="sidebar-heading">
+                Admin Tools
+            </div>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="taskTypes.php">
                     <i class='far fa-clock'></i>
                     <span>Task types</span>
                 </a>
-            <?php }  ?>
-        </li>
+            </li>
+        <?php }  ?>
 
-        <li class="nav-item">
-            <?php if ($admin == false && $manager == false) { ?>
+        <?php if ($admin == false && $manager == false) { ?>
+            <div class="sidebar-heading">
+                User Tools
+            </div>
+            <li class="nav-item">
                 <a class="nav-link collapsed" href="userTask.php">
                     <i class="fas fa-tasks"></i>
                     <span>My Task</span>
                 </a>
-            <?php }  ?>
-        </li>
+            </li>
+        <?php }  ?>
 
     </ul>
     <!-- End of Sidebar -->

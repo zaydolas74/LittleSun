@@ -1,0 +1,4 @@
+.fc-list-event-title {
+  display: flex;
+  justify-content: space-between;
+}

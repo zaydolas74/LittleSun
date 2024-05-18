@@ -26,38 +26,38 @@ class Task
     }
 
     public function createTask($userId, $taskId, $date, $start_time, $end_time)
-{
-    $conn = Db::getConnection();
+    {
+        $conn = Db::getConnection();
 
-    // Check if the user is on time-off on the selected date
-    $checkTimeOffSql = "SELECT * FROM time_off WHERE userId = :userId AND :date BETWEEN start_time AND end_time";
-    $checkStatement = $conn->prepare($checkTimeOffSql);
-    $checkStatement->bindParam(':userId', $userId);
-    $checkStatement->bindParam(':date', $date);
-    $checkStatement->execute();
+        // Check if the user is on time-off on the selected date
+        $checkTimeOffSql = "SELECT * FROM time_off WHERE userId = :userId AND :date BETWEEN start_time AND end_time";
+        $checkStatement = $conn->prepare($checkTimeOffSql);
+        $checkStatement->bindParam(':userId', $userId);
+        $checkStatement->bindParam(':date', $date);
+        $checkStatement->execute();
 
-    if ($checkStatement->rowCount() > 0) {
-        // User is on time-off on this date, throw an exception
-        throw new Exception('User has time-off on this date. Cannot assign task.');
+        if ($checkStatement->rowCount() > 0) {
+            // User is on time-off on this date, throw an exception
+            throw new Exception('User has time-off on this date. Cannot assign task.');
+        }
+
+        // If user is not on time-off, proceed with task assignment
+        $sql = "INSERT INTO user_task (userId, taskId, date, start_time, end_time) VALUES (:userId, :taskId, :date, :start_time, :end_time)";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':userId', $userId);
+        $statement->bindParam(':taskId', $taskId);
+        $statement->bindParam(':date', $date);
+        $statement->bindParam(':start_time', $start_time);
+        $statement->bindParam(':end_time', $end_time);
+
+        if ($start_time < $end_time) {
+            $result = $statement->execute();
+            return $result;
+        } else {
+            throw new Exception('End time must be greater than start time');
+            return false;
+        }
     }
-
-    // If user is not on time-off, proceed with task assignment
-    $sql = "INSERT INTO user_task (userId, taskId, date, start_time, end_time) VALUES (:userId, :taskId, :date, :start_time, :end_time)";
-    $statement = $conn->prepare($sql);
-    $statement->bindParam(':userId', $userId);
-    $statement->bindParam(':taskId', $taskId);
-    $statement->bindParam(':date', $date);
-    $statement->bindParam(':start_time', $start_time);
-    $statement->bindParam(':end_time', $end_time);
-
-    if ($start_time < $end_time) {
-        $result = $statement->execute();
-        return $result;
-    } else {
-        throw new Exception('End time must be greater than start time');
-        return false;
-    }
-}
 
 
     public function editTask($id, $type)
@@ -71,7 +71,7 @@ class Task
         return $result;
     }
 
-    public function deleteTask($id)
+    public static function deleteTask($id)
     {
         $conn = Db::getConnection();
         $sql = "DELETE FROM task WHERE id = :id";
@@ -104,7 +104,17 @@ class Task
         return $result;
     }
 
-  
+    public static function deleteUserTask($id)
+    {
+        $conn = Db::getConnection();
+        $sql = "DELETE FROM user_task WHERE id = :id";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':id', $id);
+        $result = $statement->execute();
+        return $result;
+    }
+
+
 
     public static function getAllUserTasksWithTaskName()
     {
@@ -114,5 +124,15 @@ class Task
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
+    }
+
+    public function createTaskType($type)
+    {
+        $conn = Db::getConnection();
+        $sql = "INSERT INTO task (type) VALUES (:type)";
+        $statement = $conn->prepare($sql);
+        $statement->bindParam(':type', $type);
+        $statement->execute();
+        return $conn->lastInsertId();
     }
 }
