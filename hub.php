@@ -2,6 +2,7 @@
 include_once(__DIR__ . '/classes/User.php');
 include_once(__DIR__ . '/classes/Location.php');
 include_once(__DIR__ . '/classes/Task.php');
+include_once(__DIR__ . '/classes/Permission.php');
 session_start();
 if (!isset($_SESSION['user'])) {
     header('location: index.php');
@@ -21,6 +22,7 @@ if (!isset($_SESSION['user'])) {
             }
         }
     endforeach;
+    $allTasks = Task::getAllTasks();
 }
 ?>
 <!DOCTYPE html>
@@ -43,6 +45,8 @@ if (!isset($_SESSION['user'])) {
             height: auto;
         }
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -223,12 +227,24 @@ if (!isset($_SESSION['user'])) {
                                                 </div>
                                             </div>
                                             <hr>
-                                            <h6 class="font-weight-bold mb-3">Taken:</h6>
-                                            <ul class="list-unstyled">
+                                            <ul class="list-group mb-3">
+                                                <li class="list-group-item list-group-item-action active text-dark "><strong>Taken</strong></li>
                                                 <?php $userTasks = Task::getAllUserTasksById($user['id']); ?>
                                                 <?php foreach ($userTasks as $userTask) : ?>
                                                     <?php $task = Task::getTaskById($userTask['taskId']); ?>
-                                                    <li><?php echo $task['type']; ?></li>
+                                                    <li class="list-group-item"><?php echo $task['type']; ?></li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                            <h5 class="card-title"><strong>Permission</strong></h5>
+                                            <ul class="list-group">
+                                                <?php
+                                                $userPermissions = Permission::getTaskIdByUserId($user['id']);
+                                                $userPermissionIds = array_column($userPermissions, 'taskId');
+                                                foreach ($allTasks as $task) : ?>
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <?php echo $task['type']; ?>
+                                                        <input type="checkbox" class="permission-checkbox" data-user-id="<?php echo $user['id']; ?>" data-task-id="<?php echo $task['id']; ?>" <?php if (in_array($task['id'], $userPermissionIds)) echo 'checked'; ?>>
+                                                    </li>
                                                 <?php endforeach; ?>
                                             </ul>
                                         </div>
@@ -255,6 +271,29 @@ if (!isset($_SESSION['user'])) {
     </div>
 
 </body>
+
+<script>
+    $(document).ready(function() {
+        $('.permission-checkbox').change(function() {
+            var userId = $(this).data('user-id');
+            var taskId = $(this).data('task-id');
+            var isChecked = $(this).is(':checked');
+
+            $.ajax({
+                url: 'update_permission.php',
+                method: 'POST',
+                data: {
+                    user_id: userId,
+                    task_id: taskId,
+                    checked: isChecked
+                },
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+        });
+    });
+</script>
 <script src="js/script.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>

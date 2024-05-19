@@ -49,6 +49,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $user_id = $_POST['user'];
+        $task_id = $_POST['task'];
+        $date = $_POST['date'];
+        $start_time = $_POST['start_time'];
+        $end_time = $_POST['end_time'];
+
+        if ($start_time >= $end_time) {
+            throw new Exception("End time must be greater than start time");
+        }
+
+        $task = new Task();
+        $task->createTask($user_id, $task_id, $date, $start_time, $end_time);
+
+        $succes_message = "Task assigned successfully";
+    } catch (Throwable $ex) {
+        $error = $ex->getMessage();
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -223,8 +245,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <a class="dropdown-item" href="#">TEST</a>
-                                <a class="dropdown-item" href="#">TEST</a>
                                 <a class="dropdown-item" href="logout.php">Logout</a>
                             </div>
                         </li>
@@ -253,6 +273,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     }
                                     ?>
                                     <select class="form-control" name="user" id="user">
+                                        <option value="" disabled selected>Select User</option>
                                         <?php foreach ($users as $u) :
                                             if ($u['type'] == 'User') :
                                         ?>
@@ -265,9 +286,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="form-group">
                                     <label for="task">Select Task:</label>
                                     <select class="form-control" name="task" id="task">
-                                        <?php foreach ($tasks as $task) : ?>
-                                            <option value="<?php echo $task['id']; ?>"><?php echo $task['type']; ?></option>
-                                        <?php endforeach; ?>
+                                        <!-- Options will be populated dynamically -->
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -399,5 +418,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
 </body>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#user').change(function() {
+            var userId = $(this).val();
+
+            $.ajax({
+                url: 'fetch_user_tasks.php',
+                method: 'POST',
+                data: {
+                    user_id: userId
+                },
+                success: function(response) {
+                    var tasks = JSON.parse(response);
+                    var taskDropdown = $('#task');
+                    taskDropdown.empty(); // Clear current options
+
+                    // Populate the task dropdown with permissible tasks
+                    $.each(tasks, function(index, task) {
+                        taskDropdown.append($('<option>', {
+                            value: task.id,
+                            text: task.type
+                        }));
+                    });
+                }
+            });
+        });
+    });
+</script>
+<script src="js/script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </html>
