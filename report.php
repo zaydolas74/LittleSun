@@ -139,22 +139,6 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
             <?php endif; ?>
-            <!-- Nav Item - Charts
-        <li class="nav-item">
-            <a class="nav-link" href="charts.html">
-                <i class="fas fa-fw fa-chart-area"></i>
-                <span>TEST</span></a>
-        </li>
-
-        Nav Item - Tables 
-        <li class="nav-item">
-            <a class="nav-link" href="tables.html">
-                <i class="fas fa-fw fa-table"></i>
-                <span>TEST</span></a>
-        </li>
-        -->
-
-
 
         </ul>
         <!-- End of Sidebar -->
@@ -168,19 +152,6 @@ if (!isset($_SESSION['user'])) {
                 <!-- Topbar -->
                 <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-
-                    <!-- Topbar Search 
-                <form class=" d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                    <div class="input-group">
-                        <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search fa-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-                -->
                     <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <!-- Nav Item - User Information -->
@@ -206,15 +177,12 @@ if (!isset($_SESSION['user'])) {
                                     </span>
                                 </div>
                                 <i class="fa-solid fa-angle-down"></i>
-
                             </a>
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                 <a class="dropdown-item" href="logout.php">Logout</a>
                             </div>
                         </li>
-
                     </ul>
-
                 </nav>
                 <!-- End of Topbar -->
 
@@ -225,7 +193,7 @@ if (!isset($_SESSION['user'])) {
                             <h6 class="m-0 font-weight-bold text-dark">Generate A Report</h6>
                         </div>
                         <div class="card-body">
-                            <!-- TODO: Generating a report -->
+                            <h1 class="h3 mb-4 text-gray-800 text-center">Sick hours - <?php echo date('F'); ?></h1>
                             <div class="container">
                                 <div class="row">
                                     <div class="col-12">
@@ -241,6 +209,7 @@ if (!isset($_SESSION['user'])) {
                                             $users = User::getAllData();
                                             $totalSickHours = 0;
                                             foreach ($users as $userData) :
+                                                if ($userData['type'] == 'User'):
                                                 $user_id = $userData['id'];
                                                 $user = new User();
                                                 $sickHours = $user->getSickHoursForMonth($user_id, date('Y'), date('m'));
@@ -252,7 +221,7 @@ if (!isset($_SESSION['user'])) {
                                                     <td><?php echo $userData['email']; ?></td>
                                                     <td><?php echo $sickHours ?></td>
                                                 </tr>
-                                            <?php endforeach; ?>
+                                            <?php endif; endforeach; ?>
                                             <tfoot>
                                                 <tr>
                                                     <td><strong>Total</strong></td>

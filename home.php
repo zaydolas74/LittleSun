@@ -307,10 +307,8 @@ if (!isset($_SESSION['user'])) {
                                 </span>
                             </div>
                             <i class="fa-solid fa-angle-down"></i>
-
                         </a>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                            <!-- <a class="dropdown-item" href="#">TEST</a> -->
                             <a class="dropdown-item" href="logout.php">Logout</a>
                         </div>
                     </li>
