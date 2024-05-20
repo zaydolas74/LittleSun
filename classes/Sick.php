@@ -56,8 +56,11 @@ class Sick
     public static function getAllData()
     {
         $conn = Db::getConnection();
-        $statement = $conn->query("SELECT * FROM sick");
-        return $statement->fetchAll();
+        $sql = "SELECT user.name, sick.* FROM sick INNER JOIN user ON sick.userId = user.id;";
+        $statement = $conn->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
     }
 
     public static function getOneData($userId)

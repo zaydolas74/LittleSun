@@ -6,3 +6,60 @@
 .fc-daygrid-dot-event {
   flex-wrap: wrap;
 }
+
+.fc .fc-bg-event .fc-event-title {
+  font-weight: 200;
+  font-size: 0.9em;
+}
+.fc .fc-bg-event {
+  opacity: 1;
+}
+
+.fc-event-title div {
+  display: block;
+}
+
+.fc-toolbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+  .fc .fc-bg-event .fc-event-title,
+  .fc-direction-ltr .fc-daygrid-event .fc-event-time {
+    display: none;
+  }
+
+  .fc-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .fc-toolbar-chunk {
+    flex: 1 0 100%;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
+  .fc-toolbar-chunk:last-child {
+    text-align: center;
+  }
+}
+
+/* Stijl voor de knoppen */
+.fc-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.fc-button:hover {
+  background-color: #0056b3;
+}

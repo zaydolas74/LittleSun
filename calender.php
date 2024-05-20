@@ -1,6 +1,7 @@
 <?php
 include_once(__DIR__ . '/classes/Task.php');
 include_once(__DIR__ . '/classes/User.php');
+include_once(__DIR__ . '/classes/Sick.php');
 
 session_start();
 if (!isset($_SESSION['user'])) {
@@ -12,6 +13,11 @@ if (!isset($_SESSION['user'])) {
             $username = $user['username'];
             $email = $user['email'];
             $name = $user['name'];
+            if ($user['profile_picture'] == null) {
+                $user['profile_picture'] = 'default.png';
+            } else {
+                $profile = $user['profile_picture'];
+            }
             if ($user['type'] == 'Manager') {
                 $manager = true;
             } else if ($user['type'] == 'Admin') {
@@ -22,10 +28,16 @@ if (!isset($_SESSION['user'])) {
         }
     endforeach;
 }
+
 $tasks = Task::getAllUserTasksWithTaskNameAndUserInfo();
+$sick = Sick::getAllData();
+
+
+$allEvents = [];
+
 
 // Format the events with start and end times
-$events = array_map(function ($task) {
+foreach ($tasks as $task) {
     // Combine date and time to create ISO 8601 datetime format
     $start = $task['date'] . 'T' . $task['start_time'] . ':00';
     $end = $task['date'] . 'T' . $task['end_time'] . ':00';
@@ -39,13 +51,42 @@ $events = array_map(function ($task) {
     }
 
     // Create the event object with task name and user info
-    return [
+    $allEvents[] = [
         'id' => $task['id'],
         'title' => $title,
         'start' => $start,
         'end' => $end
     ];
-}, $tasks);
+}
+
+$sickDays = [];
+
+if ($sick) {
+    foreach ($sick as $sickDay) {
+        $startDate = strtotime($sickDay['start_date']);
+        $endDate = strtotime($sickDay['end_date']) + 86400; // Adding 86400 seconds (1 day) to include end date
+
+        for ($date = $startDate; $date < $endDate; $date += 86400) {
+            $currentDate = date('Y-m-d', $date);
+            $sickDays[$currentDate][] = ucfirst(htmlspecialchars($sickDay['name']));
+        }
+    }
+
+    foreach ($sickDays as $date => $names) {
+        $title = 'Sick: ';
+        $title .= implode(', ', $names);
+        $allEvents[] = [
+            'id' => 'sick_' . $date,
+            'title' => $title,
+            'start' => $date,
+            'end' => $date,
+            'display' => 'background',
+            'color' => 'rgba(210, 0, 0, 0.2)',
+            'className' => 'sick-event'
+        ];
+    }
+}
+$eventsJson = json_encode($allEvents);
 
 ?>
 
@@ -70,11 +111,11 @@ $events = array_map(function ($task) {
                     }
                 },
                 initialView: 'dayGridMonth',
-                events: <?php echo json_encode($events); ?>,
+                events: <?php echo $eventsJson; ?>,
                 headerToolbar: {
-                    start: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+                    start: 'dayGridMonth,timeGridWeek,listWeek',
                     center: 'title',
-                    end: 'assignTaskButton,prevYear,prev,next,nextYear'
+                    end: 'assignTaskButton,prev,next'
                 },
                 eventTimeFormat: {
                     hour: '2-digit',
@@ -98,7 +139,7 @@ $events = array_map(function ($task) {
                                             taskId: taskId
                                         },
                                         success: function(response) {
-                                            arg.event.remove(); // Verwijder het event uit de kalender
+                                            arg.event.remove();
                                         },
                                         error: function(xhr, status, error) {
                                             console.error(xhr.responseText);
@@ -107,12 +148,9 @@ $events = array_map(function ($task) {
                                     });
                                 }
                             });
-
                             let title = document.createElement('div');
                             title.innerHTML = arg.event.title;
-
                             let arrayOfDomNodes = [title, deleteBtn];
-
                             return {
                                 domNodes: arrayOfDomNodes
                             };
@@ -191,11 +229,11 @@ $events = array_map(function ($task) {
                     </a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link collapsed" href="report.php">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Generate reports</span>
-                </a>
-            </li>
+                    <a class="nav-link collapsed" href="report.php">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Generate reports</span>
+                    </a>
+                </li>
             <?php endif; ?>
         </ul>
 
@@ -205,20 +243,20 @@ $events = array_map(function ($task) {
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="img-profile rounded-circle mx-2" src="images/<?php echo $user['profile_picture']; ?>">
+                                <img class="img-profile rounded-circle mx-2" src="images/<?php echo $profile ?>">
                                 <div class="container flex-column  align-items-start">
                                     <span class="small">
                                         <?php
                                         if ($admin == true) {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">🛡️ Admin</span>';
+                                            echo '<span class="mr-1  d-lg-inline text-gray-600 medium">🛡️ Admin</span>';
                                         } else if ($manager == true) {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">💼 Manager</span>';
+                                            echo '<span class="mr-1  d-lg-inline text-gray-600 medium">💼 Manager</span>';
                                         } else {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">👤 User</span>';
+                                            echo '<span class="mr-1  d-lg-inline text-gray-600 medium">👤 User</span>';
                                         }
                                         ?>
                                     </span>
-                                    <span class="mr-2 d-none d-lg-inline text-dark ">
+                                    <span class="mr-2  d-lg-inline text-dark ">
                                         <?php
                                         echo ucfirst($username);
                                         ?>
