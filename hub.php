@@ -234,7 +234,7 @@ if (!isset($_SESSION['user'])) {
                                             </div>
                                             <hr>
                                             <ul class="list-group mb-3">
-                                                <li class="list-group-item list-group-item-action active text-dark "><strong>Taken</strong></li>
+                                                <li class="list-group-item list-group-item-action active text-dark "><strong>Tasks</strong></li>
                                                 <?php $userTasks = Task::getAllUserTasksById($user['id']); ?>
                                                 <?php foreach ($userTasks as $userTask) : ?>
                                                     <?php $task = Task::getTaskById($userTask['taskId']); ?>
