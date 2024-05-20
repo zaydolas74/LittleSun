@@ -55,28 +55,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $user_id = $_POST['user'];
-        $task_id = $_POST['task'];
-        $date = $_POST['date'];
-        $start_time = $_POST['start_time'];
-        $end_time = $_POST['end_time'];
-
-        if ($start_time >= $end_time) {
-            throw new Exception("End time must be greater than start time");
-        }
-
-        $task = new Task();
-        $task->createTask($user_id, $task_id, $date, $start_time, $end_time);
-
-        $succes_message = "Task assigned successfully";
-    } catch (Throwable $ex) {
-        $error = $ex->getMessage();
-    }
-}
-
 ?>
 
 <!DOCTYPE html>
