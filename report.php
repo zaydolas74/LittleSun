@@ -28,16 +28,7 @@ if (!isset($_SESSION['user'])) {
     }
 }
 
-$users = User::getAllData();
-$totalSickHours = 0;
-foreach ($users as $userData) {
-    $user_id = $userData['id'];
-    $user = new User();
-    $sickHours = $user->getSickHoursForMonth($user_id, date('Y'), date('m'));
-    $totalSickHours += $sickHours;
-    echo "User ID: $user_id, Sick Hours: $sickHours<br>";
-}
-echo "Total Sick Hours: $totalSickHours<br>"; 
+
 ?>
 
 <!DOCTYPE html>
@@ -238,23 +229,52 @@ echo "Total Sick Hours: $totalSickHours<br>";
                             <div class="container">
                                 <div class="row">
                                     <div class="col-12">
-                                        <h2>Report for <?php echo $name; ?></h2>
-                                        <h3>Location: <?php echo $location_name; ?></h3>
-                                        <h4>Total sick hours for this month: <?php echo $totalSickHours; ?></h4>
+                                        <table class="table table-striped">
+                                            <thead class="thead-dark">
+                                                <tr>
+                                                    <th scope="col">Name</th>
+                                                    <th scope="col">Email</th>
+                                                    <th scope="col">Sick Hours</th>
+                                                </tr>
+                                            </thead>
+                                            <?php
+                                            $users = User::getAllData();
+                                            $totalSickHours = 0;
+                                            foreach ($users as $userData) :
+                                                $user_id = $userData['id'];
+                                                $user = new User();
+                                                $sickHours = $user->getSickHoursForMonth($user_id, date('Y'), date('m'));
+                                                $totalSickHours += $sickHours;
+                                            ?>
+
+                                                <tr>
+                                                    <td><?php echo $userData['name']; ?></td>
+                                                    <td><?php echo $userData['email']; ?></td>
+                                                    <td><?php echo $sickHours ?></td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                            <tfoot>
+                                                <tr>
+                                                    <td><strong>Total</strong></td>
+                                                    <td></td>
+                                                    <td><strong><?php echo $totalSickHours; ?></strong></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
                                     </div>
                                 </div>
+                            </div>
                         </div>
                     </div>
+
+
+
                 </div>
-
-
+                <!-- End of Content Wrapper -->
 
             </div>
-            <!-- End of Content Wrapper -->
-
+            <!-- End of Page Wrapper -->
         </div>
-        <!-- End of Page Wrapper -->
-    </div>
 
 </body>
 
