@@ -2,6 +2,7 @@
 include_once(__DIR__ . '/classes/User.php');
 include_once(__DIR__ . '/classes/Location.php');
 include_once(__DIR__ . '/classes/Task.php');
+include_once(__DIR__ . '/classes/Permission.php');
 
 
 session_start();
@@ -174,6 +175,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <span>Assign Task</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                <a class="nav-link collapsed" href="report.php">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Generate reports</span>
+                </a>
+            </li>
             <?php endif; ?>
             <!-- Nav Item - Charts
         <li class="nav-item">

@@ -112,6 +112,12 @@ if (!isset($_SESSION['user'])) {
                         <span>Assign Task</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                <a class="nav-link collapsed" href="report.php">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Generate reports</span>
+                </a>
+            </li>
             <?php endif; ?>
 
             <!-- Nav Item - Charts

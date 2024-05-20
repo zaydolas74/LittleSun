@@ -104,6 +104,23 @@ class User
         return $result;
     }
 
+    public function getSickHoursForMonth($userId, $year, $month)
+    {
+        $conn = Db::getConnection();
+        $sql = "SELECT SUM(TIMESTAMPDIFF(HOUR, start_date, end_date)) AS total_sick_hours 
+            FROM sick 
+            WHERE userId = :userId 
+            AND YEAR(start_date) = :year 
+            AND MONTH(start_date) = :month";
+        $statement = $conn->prepare($sql);
+        $statement->bindValue(':userId', $userId);
+        $statement->bindValue(':year', $year);
+        $statement->bindValue(':month', $month);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result['total_sick_hours'] ?? 0; // Return total sick hours or 0 if no record found
+    }
+    
     /**
      * Get the value of name
      */
@@ -206,6 +223,26 @@ class User
     public function setLocation_id($location_id)
     {
         $this->location_id = $location_id;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of id
+     */ 
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set the value of id
+     *
+     * @return  self
+     */ 
+    public function setId($id)
+    {
+        $this->id = $id;
 
         return $this;
     }
