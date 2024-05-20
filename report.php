@@ -194,51 +194,45 @@ if (!isset($_SESSION['user'])) {
                         </div>
                         <div class="card-body">
                             <h1 class="h3 mb-4 text-gray-800 text-center">Sick hours - <?php echo date('F'); ?></h1>
-                            <div class="container">
-                                <div class="row">
-                                    <div class="col-12">
-                                        <table class="table table-striped">
-                                            <thead class="thead-dark">
-                                                <tr>
-                                                    <th scope="col">Name</th>
-                                                    <th scope="col">Email</th>
-                                                    <th scope="col">Sick Hours</th>
-                                                </tr>
-                                            </thead>
-                                            <?php
-                                            $users = User::getAllData();
-                                            $totalSickHours = 0;
-                                            foreach ($users as $userData) :
-                                                if ($userData['type'] == 'User'):
-                                                $user_id = $userData['id'];
-                                                $user = new User();
-                                                $sickHours = $user->getSickHoursForMonth($user_id, date('Y'), date('m'));
-                                                $totalSickHours += $sickHours;
-                                            ?>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Email</th>
+                                            <th scope="col">Sick Hours</th>
+                                        </tr>
+                                    </thead>
+                                    <?php
+                                    $users = User::getAllData();
+                                    $totalSickHours = 0;
+                                    foreach ($users as $userData) :
+                                        if ($userData['type'] == 'User') :
+                                            $user_id = $userData['id'];
+                                            $user = new User();
+                                            $sickHours = $user->getSickHoursForMonth($user_id, date('Y'), date('m'));
+                                            $totalSickHours += $sickHours;
+                                    ?>
 
-                                                <tr>
-                                                    <td><?php echo $userData['name']; ?></td>
-                                                    <td><?php echo $userData['email']; ?></td>
-                                                    <td><?php echo $sickHours ?></td>
-                                                </tr>
-                                            <?php endif; endforeach; ?>
-                                            <tfoot>
-                                                <tr>
-                                                    <td><strong>Total</strong></td>
-                                                    <td></td>
-                                                    <td><strong><?php echo $totalSickHours; ?></strong></td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
+                                            <tr>
+                                                <td><?php echo $userData['name']; ?></td>
+                                                <td><?php echo $userData['email']; ?></td>
+                                                <td><?php echo $sickHours ?></td>
+                                            </tr>
+                                    <?php endif;
+                                    endforeach; ?>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2"><strong>Total</strong></td>
+                                            <td><strong><?php echo $totalSickHours; ?></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
                             </div>
                         </div>
                     </div>
-
-
-
                 </div>
+
                 <!-- End of Content Wrapper -->
 
             </div>
