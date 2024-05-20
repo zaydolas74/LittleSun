@@ -41,6 +41,7 @@ if (!isset($_SESSION['user'])) {
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/popup.css">
+
     <!-- Sidebar -->
     <ul class="navbar-nav bg-dark sidebar sidebar-dark accordion" id="accordionSidebar">
 
@@ -287,7 +288,7 @@ if (!isset($_SESSION['user'])) {
                 var newType = document.querySelector(`.task-type[data-id='${taskId}'] input`).value;
 
                 var xhr = new XMLHttpRequest();
-                xhr.open('POST', 'editTask.php', true);
+                xhr.open('POST', 'saveTask.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onreadystatechange = function() {
                     if (xhr.readyState === 4 && xhr.status === 200) {

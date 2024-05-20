@@ -106,23 +106,7 @@ $eventsJson = json_encode($allEvents);
                 },
                 views: {
                     listWeek: {
-                        eventContent: function(arg) {
-                            let deleteBtn = document.createElement('button');
-                            deleteBtn.innerText = 'Call Sick';
-                            deleteBtn.classList.add('btn', 'btn-danger', 'btn-sm', 'ml-2');
-                            deleteBtn.addEventListener('click', function() {
-                                window.location.href = 'timeOffUser.php';
-                            });
 
-                            let title = document.createElement('div');
-                            title.innerHTML = arg.event.title;
-
-                            let arrayOfDomNodes = [title, deleteBtn];
-
-                            return {
-                                domNodes: arrayOfDomNodes
-                            };
-                        }
                     }
                 }
             });

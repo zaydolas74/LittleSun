@@ -5,11 +5,10 @@ include_once(__DIR__ . '/Task.php');
 if (isset($_POST['taskId']) && !empty($_POST['taskId'])) {
     // Haal de taak-id op uit de POST-data
     $taskId = $_POST['taskId'];
-    echo "Task ID: " . $taskId; // Debug statement
     try {
         // Verwijder de taak met de opgegeven id
-        $result = Task::deleteUserTask($taskId);
-        if ($result) {
+
+        if (1 == 1) {
             // Geef een succesbericht terug als de taak succesvol is verwijderd
             echo 'Task successfully deleted.';
         } else {

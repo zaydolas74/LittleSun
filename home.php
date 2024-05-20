@@ -83,7 +83,11 @@ if (!isset($_SESSION['user'])) {
                             throw new Exception("Failed to move uploaded file.");
                         }
                     }
-                    $user->saveManager();
+                    if ($admin) {
+                        $user->saveManager();
+                    } else {
+                        $user->save();
+                    }
                 }
             }
         } catch (Throwable $ex) {
@@ -121,7 +125,11 @@ if (!isset($_SESSION['user'])) {
                             throw new Exception("Failed to move uploaded file.");
                         }
                     }
-                    $user->save();
+                    if ($admin) {
+                        $user->saveManager();
+                    } else {
+                        $user->save();
+                    }
                 }
             }
         } catch (Throwable $ex) {
@@ -330,7 +338,15 @@ if (!isset($_SESSION['user'])) {
                 ?>
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-dark">Add a hub manager</h6>
+                            <h6 class="m-0 font-weight-bold text-dark">
+                                <?php
+                                if ($manager == true) {
+                                    echo "Add a New User";
+                                } else {
+                                    echo "Add a New Manager";
+                                }
+                                ?>
+                            </h6>
                         </div>
                         <div class="card-body">
                             <form action="" class="mx-1 mx-md-4" method="post" enctype="multipart/form-data">

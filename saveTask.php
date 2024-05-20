@@ -1,6 +1,6 @@
 <?php
 include_once(__DIR__ . '/classes/Task.php');
-include_once("bootstrap.php");
+
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = $_POST['type'];
