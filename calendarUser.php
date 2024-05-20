@@ -13,6 +13,11 @@ if (!isset($_SESSION['user'])) {
             $username = $user['username'];
             $email = $user['email'];
             $name = $user['name'];
+            if ($user['profile_picture'] == null) {
+                $user['profile_picture'] = 'default.jpg';
+            } else {
+                $profile = $user['profile_picture'];
+            }
             if ($user['type'] == 'Manager') {
                 header('location: calender.php');
             } else if ($user['type'] == 'Admin') {
@@ -51,7 +56,8 @@ if ($sickDays) {
             'start' => $startDate,
             'end' => $endDate,
             'display' => 'background',
-            'color' => 'red'
+            'color' => 'rgba(210, 0, 0, 0.2)',
+            'className' => 'sick-event'
         ];
     }
 }
@@ -211,20 +217,20 @@ $eventsJson = json_encode($allEvents);
                     <ul class="navbar-nav ml-auto">
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="img-profile rounded-circle mx-2" src="images/<?php echo $user['profile_picture']; ?>">
+                                <img class="img-profile rounded-circle mx-2" src="images/<?php echo $profile; ?>">
                                 <div class="container flex-column  align-items-start">
                                     <span class="small">
                                         <?php
                                         if ($admin == true) {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">🛡️ Admin</span>';
+                                            echo '<span class="mr-1 d-lg-inline text-gray-600 medium">🛡️ Admin</span>';
                                         } else if ($manager == true) {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">💼 Manager</span>';
+                                            echo '<span class="mr-1 d-lg-inline text-gray-600 medium">💼 Manager</span>';
                                         } else {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">👤 User</span>';
+                                            echo '<span class="mr-1 d-lg-inline text-gray-600 medium">👤 User</span>';
                                         }
                                         ?>
                                     </span>
-                                    <span class="mr-2 d-none d-lg-inline text-dark ">
+                                    <span class="mr-2 d-lg-inline text-dark ">
                                         <?php
                                         echo ucfirst($username);
                                         ?>

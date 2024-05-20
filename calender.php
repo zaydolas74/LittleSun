@@ -14,7 +14,7 @@ if (!isset($_SESSION['user'])) {
             $email = $user['email'];
             $name = $user['name'];
             if ($user['profile_picture'] == null) {
-                $user['profile_picture'] = 'default.png';
+                $user['profile_picture'] = 'default.jpg';
             } else {
                 $profile = $user['profile_picture'];
             }

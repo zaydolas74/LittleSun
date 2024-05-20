@@ -14,6 +14,11 @@ if (!isset($_SESSION['user'])) {
             $email = $user['email'];
             $name = $user['name'];
             $location_name = Location::getLocationById($user['location_id']);
+            if ($user['profile_picture'] == null) {
+                $user['profile_picture'] = 'default.jpg';
+            } else {
+                $profile = $user['profile_picture'];
+            }
             if ($user['type'] == 'Manager') {
                 $manager = true;
             } else {
@@ -113,11 +118,11 @@ if (!isset($_SESSION['user'])) {
                     </a>
                 </li>
                 <li class="nav-item">
-                <a class="nav-link collapsed" href="report.php">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Generate reports</span>
-                </a>
-            </li>
+                    <a class="nav-link collapsed" href="report.php">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Generate reports</span>
+                    </a>
+                </li>
             <?php endif; ?>
 
             <!-- Nav Item - Charts
@@ -167,20 +172,20 @@ if (!isset($_SESSION['user'])) {
                         <!-- Nav Item - User Information -->
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img class="img-profile rounded-circle mx-2" src="images/<?php echo $user['profile_picture']; ?>">
+                                <img class="img-profile rounded-circle mx-2" src="images/<?php echo $profile; ?>">
                                 <div class="container flex-column  align-items-start">
                                     <span class="small">
                                         <?php
                                         if ($admin == true) {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">🛡️ Admin</span>';
+                                            echo '<span class="mr-1  d-lg-inline text-gray-600 medium">🛡️ Admin</span>';
                                         } else if ($manager == true) {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">💼 Manager</span>';
+                                            echo '<span class="mr-1 d-lg-inline text-gray-600 medium">💼 Manager</span>';
                                         } else {
-                                            echo '<span class="mr-1 d-none d-lg-inline text-gray-600 medium">👤 User</span>';
+                                            echo '<span class="mr-1 d-lg-inline text-gray-600 medium">👤 User</span>';
                                         }
                                         ?>
                                     </span>
-                                    <span class="mr-2 d-none d-lg-inline text-dark ">
+                                    <span class="mr-2  d-lg-inline text-dark ">
                                         <?php
                                         echo ucfirst($username)
                                         ?>
